@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/employ-logo.png" type="image/png">
 <title>Employ Werkt! - Social Media Content Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -517,8 +518,11 @@
   }
 
   @media print {
-    .edit-panel, .page-title, .page-sub, .template-label, .refresh-btn { display: none; }
+    .page-title, .page-sub, .template-label, .btn-row-wrap, .download-all-wrap,
+    .workspace, .help-toggle, .help-panel, .manager-toggle, .manager-panel,
+    .upload-modal, .fullscreen-overlay { display: none !important; }
     body { padding: 0; background: white; }
+    .templates-grid { gap: 20px; }
   }
 </style>
 </head>
@@ -642,14 +646,10 @@
             <div class="chip">📍 <span id="v-loc-3">Hoogeveen</span></div>
             <div class="chip">⏰ <span id="v-hrs-3">32-40 uur</span></div>
             <div class="chip">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
+            <div class="chip">📅 <span id="v-start-3">Per 1 juli</span></div>
           </div>
         </div>
-        <div class="bottom" style="margin-top: 12px;">
-          <div class="glass-salary">
-            <span class="small">Vanaf</span>
-            <span class="big" id="v-sal-3">€17</span>
-            <span class="small">bruto p/u</span>
-          </div>
+        <div class="bottom" style="margin-top: 12px; justify-content: flex-end;">
           <div class="glass-cta">Interesse? Kijk in de beschrijving ↓</div>
         </div>
       </div>
@@ -696,6 +696,7 @@
       <li><strong>Uren</strong> — Werkuren per week</li>
       <li><strong>Startdatum</strong> — Wanneer de vacature ingaat</li>
       <li><strong>Beschrijving</strong> — Vraag of omschrijving voor de kandidaat</li>
+      <li><strong>Call-to-action</strong> — Kies uit vooringestelde opties of typ je eigen CTA tekst</li>
     </ul>
   </div>
 
@@ -1308,7 +1309,10 @@ const fields = {
       if (el && !isLocked(id)) el.textContent = v;
     });
   },
-  'inp-start': (v) => {},
+  'inp-start': (v) => {
+    const el = document.getElementById('v-start-3');
+    if (el && !isLocked('v-start-3')) el.textContent = v;
+  },
   'inp-desc': (v) => {
     ['v-desc-1','v-desc-2a'].forEach(id => {
       const el = document.getElementById(id);
