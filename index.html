@@ -63,6 +63,21 @@
   }
   .ib:hover::after { opacity: 1; }
   .sep { width: 1px; background: #eee; margin: 6px 2px; }
+
+  /* Visibility toggles */
+  .vis-row {
+    display: flex; gap: 4px; justify-content: center; margin-top: 4px;
+  }
+  .vis-toggle {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px; border: 1px solid #e0e0e0;
+    background: white; font-family: inherit; font-size: 10px;
+    font-weight: 600; color: #888; cursor: pointer; transition: all 0.15s;
+  }
+  .vis-toggle:hover { border-color: #bbb; }
+  .vis-toggle.on { background: #111; color: white; border-color: #111; }
+  .vis-toggle .dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; }
+  .vis-toggle.on .dot { background: var(--orange); }
   .upload-input { display: none; }
   .upload-modal {
     display: none; position: fixed; inset: 0; z-index: 999;
@@ -552,14 +567,14 @@
         <div class="mid">
           <div class="sub-label">Wij zoeken een</div>
           <div class="title" id="v-title-1">Financieel Administratief Medewerker</div>
-          <div class="desc" id="v-desc-1">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
-          <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
-            <span style="font-size:12px;">📍</span>
-            <span style="font-size:12px; color:rgba(255,255,255,0.55); font-weight:500;" id="v-loc-1">Hoogeveen</span>
+          <div class="desc" id="v-desc-1" data-field="beschrijving">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
+          <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;" class="t1-meta">
+            <div style="display:flex; align-items:center; gap:4px;" data-field="locatie"><span style="font-size:11px;">📍</span><span style="font-size:11px; color:rgba(255,255,255,0.55); font-weight:500;" id="v-loc-1">Hoogeveen</span></div>
+            <div style="display:flex; align-items:center; gap:4px;" data-field="uren"><span style="font-size:11px;">⏰</span><span style="font-size:11px; color:rgba(255,255,255,0.55); font-weight:500;" id="v-hrs-1">32-40 uur</span></div>
           </div>
         </div>
         <div class="bot">
-          <div class="salary-box">
+          <div class="salary-box" data-field="salaris">
             <span class="small">Vanaf</span>
             <span class="big" id="v-sal-1">€17</span>
             <span class="small">bruto p/u</span>
@@ -576,6 +591,12 @@
       <button class="ib" data-tip="Zwart-wit" onclick="toggleBW('tpl1', this)">◐</button>
       <div class="sep"></div>
       <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl1', 'bold-modern')">⬇</button>
+    </div>
+    <div class="vis-row" data-tpl="tpl1">
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','locatie',this)"><span class="dot"></span>Locatie</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','uren',this)"><span class="dot"></span>Uren</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','salaris',this)"><span class="dot"></span>Salaris</button>
     </div>
   </div>
 
@@ -596,14 +617,14 @@
         <div class="content">
           <div class="vacature-line">Vacature</div>
           <h2 id="v-title-2a">Financieel Administratief Medewerker</h2>
-          <div class="desc" id="v-desc-2a">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
+          <div class="desc" id="v-desc-2a" data-field="beschrijving">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
           <div class="info-row">
-            <div class="info-pill">📍 <span id="v-loc-2a">Hoogeveen</span></div>
-            <div class="info-pill">⏰ <span id="v-hrs-2a">32-40 uur</span></div>
+            <div class="info-pill" data-field="locatie">📍 <span id="v-loc-2a">Hoogeveen</span></div>
+            <div class="info-pill" data-field="uren">⏰ <span id="v-hrs-2a">32-40 uur</span></div>
           </div>
         </div>
         <div class="bot-row">
-          <div class="sal-badge">
+          <div class="sal-badge" data-field="salaris">
             <span class="small">Vanaf</span>
             <span class="big" id="v-sal-2a">€17</span>
             <span class="small">bruto p/u</span>
@@ -621,8 +642,13 @@
       <div class="sep"></div>
       <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl2a', 'cinematic')">⬇</button>
     </div>
+    <div class="vis-row" data-tpl="tpl2a">
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','locatie',this)"><span class="dot"></span>Locatie</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','uren',this)"><span class="dot"></span>Uren</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','salaris',this)"><span class="dot"></span>Salaris</button>
+    </div>
   </div>
-
 
   <!-- ======== TEMPLATE 3: GLASS ======== -->
   <div class="template-wrap">
@@ -642,14 +668,15 @@
         <div class="glass-card">
           <div class="badge">Vacature</div>
           <h2 id="v-title-3">Financieel Administratief Medewerker</h2>
+          <div style="font-size:11px; color:rgba(255,255,255,0.55); line-height:1.4; margin-bottom:8px;" id="v-desc-3" data-field="beschrijving">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
           <div class="glass-chips">
-            <div class="chip">📍 <span id="v-loc-3">Hoogeveen</span></div>
-            <div class="chip">⏰ <span id="v-hrs-3">32-40 uur</span></div>
-            <div class="chip">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
+            <div class="chip" data-field="locatie">📍 <span id="v-loc-3">Hoogeveen</span></div>
+            <div class="chip" data-field="uren">⏰ <span id="v-hrs-3">32-40 uur</span></div>
+            <div class="chip" data-field="salaris">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
           </div>
         </div>
         <div class="bottom" style="margin-top: 12px;">
-          <div class="glass-salary">
+          <div class="glass-salary" data-field="salaris">
             <span class="small">Vanaf</span>
             <span class="big" id="v-sal-3">€17</span>
             <span class="small">bruto p/u</span>
@@ -666,6 +693,12 @@
       <button class="ib" data-tip="Zwart-wit" onclick="toggleBW('tpl3', this)">◐</button>
       <div class="sep"></div>
       <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl3', 'glassmorphism')">⬇</button>
+    </div>
+    <div class="vis-row" data-tpl="tpl3">
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','locatie',this)"><span class="dot"></span>Locatie</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','uren',this)"><span class="dot"></span>Uren</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','salaris',this)"><span class="dot"></span>Salaris</button>
     </div>
   </div>
 
@@ -937,6 +970,19 @@ function downloadTemplate(elementId, name) {
       if (s.bg) s.el.style.backgroundColor = '';
     });
   });
+}
+
+// Visibility toggles per template
+function toggleVis(tplId, field, btn) {
+  const tpl = document.getElementById(tplId);
+  const els = tpl.querySelectorAll(`[data-field="${field}"]`);
+  const isOn = btn.classList.contains('on');
+
+  els.forEach(el => {
+    el.style.display = isOn ? 'none' : '';
+  });
+
+  btn.classList.toggle('on');
 }
 
 // Fullscreen preview — click any template
@@ -1323,7 +1369,7 @@ const fields = {
     });
   },
   'inp-hrs': (v) => {
-    ['v-hrs-2a','v-hrs-3'].forEach(id => {
+    ['v-hrs-1','v-hrs-2a','v-hrs-3'].forEach(id => {
       const el = document.getElementById(id);
       if (el && !isLocked(id)) el.textContent = v;
     });
@@ -1333,7 +1379,7 @@ const fields = {
     if (el && !isLocked('v-start-3')) el.textContent = v;
   },
   'inp-desc': (v) => {
-    ['v-desc-1','v-desc-2a'].forEach(id => {
+    ['v-desc-1','v-desc-2a','v-desc-3'].forEach(id => {
       const el = document.getElementById(id);
       if (el && !isLocked(id)) el.textContent = v;
     });
