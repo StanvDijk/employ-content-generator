@@ -561,7 +561,7 @@
             <div class="name">Employ <span>Werkt!</span></div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <div class="glass-tag" style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:6px 14px; color:white; font-size:11px; font-weight:600;">employwerkt.nl</div>
+            <div class="glass-tag" style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:6px 14px; color:white; font-size:11px; font-weight:600;" data-field="site">employwerkt.nl</div>
           </div>
         </div>
         <div class="mid">
@@ -594,6 +594,7 @@
       <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl1', 'bold-modern')">⬇</button>
     </div>
     <div class="vis-row" data-tpl="tpl1">
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','site',this)"><span class="dot"></span>Site</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','locatie',this)"><span class="dot"></span>Locatie</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','uren',this)"><span class="dot"></span>Uren</button>
@@ -614,7 +615,7 @@
             <img src="assets/employ-logo.png" alt="Employ">
             <div class="name">Employ <span>Werkt!</span></div>
           </div>
-          <div class="glass-tag" style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:6px 14px; color:white; font-size:11px; font-weight:600;">employwerkt.nl</div>
+          <div class="glass-tag" style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:6px 14px; color:white; font-size:11px; font-weight:600;" data-field="site">employwerkt.nl</div>
         </div>
         <div class="content">
           <div class="vacature-line">Vacature</div>
@@ -646,6 +647,7 @@
       <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl2a', 'cinematic')">⬇</button>
     </div>
     <div class="vis-row" data-tpl="tpl2a">
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','site',this)"><span class="dot"></span>Site</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','locatie',this)"><span class="dot"></span>Locatie</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','uren',this)"><span class="dot"></span>Uren</button>
@@ -666,7 +668,7 @@
             <img src="assets/employ-logo.png" alt="Employ">
             <div class="name">Employ <span>Werkt!</span></div>
           </div>
-          <div class="glass-tag">employwerkt.nl</div>
+          <div class="glass-tag" data-field="site">employwerkt.nl</div>
         </div>
         <div style="flex:1"></div>
         <div class="glass-card">
@@ -699,6 +701,7 @@
       <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl3', 'glassmorphism')">⬇</button>
     </div>
     <div class="vis-row" data-tpl="tpl3">
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','site',this)"><span class="dot"></span>Site</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','locatie',this)"><span class="dot"></span>Locatie</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','uren',this)"><span class="dot"></span>Uren</button>
