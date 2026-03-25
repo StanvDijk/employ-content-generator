@@ -568,13 +568,14 @@
           <div class="sub-label">Wij zoeken een</div>
           <div class="title" id="v-title-1">Financieel Administratief Medewerker</div>
           <div class="desc" id="v-desc-1" data-field="beschrijving">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
-          <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;" class="t1-meta">
-            <div style="display:flex; align-items:center; gap:4px;" data-field="locatie"><span style="font-size:11px;">📍</span><span style="font-size:11px; color:rgba(255,255,255,0.55); font-weight:500;" id="v-loc-1">Hoogeveen</span></div>
-            <div style="display:flex; align-items:center; gap:4px;" data-field="uren"><span style="font-size:11px;">⏰</span><span style="font-size:11px; color:rgba(255,255,255,0.55); font-weight:500;" id="v-hrs-1">32-40 uur</span></div>
+          <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="locatie"><span style="font-size:11px;">📍</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-loc-1">Hoogeveen</span></div>
+            <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="uren"><span style="font-size:11px;">⏰</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-hrs-1">32-40 uur</span></div>
+            <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="salaris-info"><span style="font-size:11px;">💶</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-sal-info-1">Vanaf €17 p/u</span></div>
           </div>
         </div>
         <div class="bot">
-          <div class="salary-box" data-field="salaris">
+          <div class="salary-box" data-field="salaris-groot">
             <span class="small">Vanaf</span>
             <span class="big" id="v-sal-1">€17</span>
             <span class="small">bruto p/u</span>
@@ -596,7 +597,8 @@
       <button class="vis-toggle on" onclick="toggleVis('tpl1','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','locatie',this)"><span class="dot"></span>Locatie</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','uren',this)"><span class="dot"></span>Uren</button>
-      <button class="vis-toggle on" onclick="toggleVis('tpl1','salaris',this)"><span class="dot"></span>Salaris</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','salaris-info',this)"><span class="dot"></span>Salaris (info)</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','salaris-groot',this)"><span class="dot"></span>Salaris (groot)</button>
     </div>
   </div>
 
@@ -621,10 +623,11 @@
           <div class="info-row">
             <div class="info-pill" data-field="locatie">📍 <span id="v-loc-2a">Hoogeveen</span></div>
             <div class="info-pill" data-field="uren">⏰ <span id="v-hrs-2a">32-40 uur</span></div>
+            <div class="info-pill" data-field="salaris-info">💶 <span id="v-sal-info-2a">Vanaf €17 p/u</span></div>
           </div>
         </div>
         <div class="bot-row">
-          <div class="sal-badge" data-field="salaris">
+          <div class="sal-badge" data-field="salaris-groot">
             <span class="small">Vanaf</span>
             <span class="big" id="v-sal-2a">€17</span>
             <span class="small">bruto p/u</span>
@@ -646,7 +649,8 @@
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','locatie',this)"><span class="dot"></span>Locatie</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','uren',this)"><span class="dot"></span>Uren</button>
-      <button class="vis-toggle on" onclick="toggleVis('tpl2a','salaris',this)"><span class="dot"></span>Salaris</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','salaris-info',this)"><span class="dot"></span>Salaris (info)</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','salaris-groot',this)"><span class="dot"></span>Salaris (groot)</button>
     </div>
   </div>
 
@@ -672,11 +676,11 @@
           <div class="glass-chips">
             <div class="chip" data-field="locatie">📍 <span id="v-loc-3">Hoogeveen</span></div>
             <div class="chip" data-field="uren">⏰ <span id="v-hrs-3">32-40 uur</span></div>
-            <div class="chip" data-field="salaris">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
+            <div class="chip" data-field="salaris-info">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
           </div>
         </div>
         <div class="bottom" style="margin-top: 12px;">
-          <div class="glass-salary" data-field="salaris">
+          <div class="glass-salary" data-field="salaris-groot">
             <span class="small">Vanaf</span>
             <span class="big" id="v-sal-3">€17</span>
             <span class="small">bruto p/u</span>
@@ -698,7 +702,8 @@
       <button class="vis-toggle on" onclick="toggleVis('tpl3','beschrijving',this)"><span class="dot"></span>Beschrijving</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','locatie',this)"><span class="dot"></span>Locatie</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','uren',this)"><span class="dot"></span>Uren</button>
-      <button class="vis-toggle on" onclick="toggleVis('tpl3','salaris',this)"><span class="dot"></span>Salaris</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','salaris-info',this)"><span class="dot"></span>Salaris (info)</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','salaris-groot',this)"><span class="dot"></span>Salaris (groot)</button>
     </div>
   </div>
 
@@ -1359,8 +1364,10 @@ const fields = {
       const el = document.getElementById(id);
       if (el && !isLocked(id)) el.textContent = v;
     });
-    const sc = document.getElementById('v-sal-chip-3');
-    if (sc && !isLocked('v-sal-chip-3')) sc.textContent = 'Vanaf ' + v + ' p/u';
+    ['v-sal-info-1','v-sal-info-2a','v-sal-chip-3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = 'Vanaf ' + v + ' p/u';
+    });
   },
   'inp-loc': (v) => {
     ['v-loc-1','v-loc-2a','v-loc-3'].forEach(id => {
