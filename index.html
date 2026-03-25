@@ -646,10 +646,14 @@
             <div class="chip">📍 <span id="v-loc-3">Hoogeveen</span></div>
             <div class="chip">⏰ <span id="v-hrs-3">32-40 uur</span></div>
             <div class="chip">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
-            <div class="chip">📅 <span id="v-start-3">Per 1 juli</span></div>
           </div>
         </div>
-        <div class="bottom" style="margin-top: 12px; justify-content: flex-end;">
+        <div class="bottom" style="margin-top: 12px;">
+          <div class="glass-salary">
+            <span class="small">Vanaf</span>
+            <span class="big" id="v-sal-3">€17</span>
+            <span class="small">bruto p/u</span>
+          </div>
           <div class="glass-cta">Interesse? Kijk in de beschrijving ↓</div>
         </div>
       </div>
@@ -1169,6 +1173,21 @@ document.getElementById('managerUpload').addEventListener('change', function(e) 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('photoBadge').textContent = photos.length;
   generatePost();
+});
+
+// Close panels when clicking outside
+document.addEventListener('click', (e) => {
+  const helpPanel = document.getElementById('helpPanel');
+  const helpToggle = document.querySelector('.help-toggle');
+  if (helpPanel.classList.contains('show') && !helpPanel.contains(e.target) && !helpToggle.contains(e.target)) {
+    helpPanel.classList.remove('show');
+  }
+
+  const managerPanel = document.getElementById('managerPanel');
+  const managerToggle = document.querySelector('.manager-toggle');
+  if (managerPanel.classList.contains('show') && !managerPanel.contains(e.target) && !managerToggle.contains(e.target)) {
+    managerPanel.classList.remove('show');
+  }
 });
 
 // Upload custom photo
