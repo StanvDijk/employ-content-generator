@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employ Werkt! - Social Media Content Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --orange: #EE7203;
+    --black: #111;
+    --w: 432px;
+    --h: 540px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f0f0; padding: 32px; color: #1a1a1a; }
+
+  .page-title { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 13px; color: #999; margin-bottom: 40px; }
+
+  /* Layout */
+  .templates-grid {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .template-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .template-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #aaa;
+  }
+  .btn-row-wrap {
+    display: flex; gap: 2px; justify-content: center;
+    background: white; border-radius: 12px; padding: 4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #eee;
+  }
+  .ib {
+    width: 38px; height: 38px; border-radius: 8px; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; transition: all 0.15s;
+    background: transparent; color: #999; position: relative;
+    font-family: inherit;
+  }
+  .ib:hover { background: #f5f5f5; color: #333; }
+  .ib.active { background: #111; color: white; }
+  .ib.primary { background: var(--orange); color: white; border-radius: 8px; }
+  .ib.primary:hover { background: #d4650a; }
+  .ib::after {
+    content: attr(data-tip); position: absolute; bottom: -30px; left: 50%;
+    transform: translateX(-50%); background: #111; color: white;
+    padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600;
+    white-space: nowrap; opacity: 0; pointer-events: none;
+    transition: opacity 0.15s; z-index: 10;
+  }
+  .ib:hover::after { opacity: 1; }
+  .sep { width: 1px; background: #eee; margin: 6px 2px; }
+  .upload-input { display: none; }
+  .upload-modal {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .upload-modal.show { display: flex; }
+  .upload-box {
+    background: white; border-radius: 16px; padding: 28px;
+    width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  .upload-box h4 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+  .upload-box p { font-size: 12px; color: #888; margin-bottom: 18px; }
+  .upload-box .preview-img {
+    width: 100%; height: 160px; border-radius: 10px;
+    object-fit: cover; margin-bottom: 16px; background: #f0f0f0;
+  }
+  .upload-box .btn-group { display: flex; flex-direction: column; gap: 8px; }
+  .upload-box .btn-choice {
+    padding: 11px; border-radius: 10px; border: none;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-once { background: #f0f0f0; color: #333; }
+  .btn-once:hover { background: #e0e0e0; }
+  .btn-add { background: var(--orange); color: white; }
+  .btn-add:hover { background: #d4650a; }
+  .btn-cancel { background: none; color: #999; border: none; font-size: 12px; cursor: pointer; margin-top: 4px; }
+
+  /* Photo manager */
+  .manager-toggle {
+    position: fixed; bottom: 24px; right: 24px; z-index: 900;
+    background: var(--black); color: white; border: none;
+    padding: 12px 20px; border-radius: 12px;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+  }
+  .manager-toggle:hover { background: #333; }
+
+  .manager-panel {
+    display: none; position: fixed; bottom: 80px; right: 24px; z-index: 900;
+    background: white; border-radius: 16px; padding: 24px;
+    width: 380px; max-height: 70vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .manager-panel.show { display: block; }
+  .manager-panel h4 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+  .manager-panel .sub { font-size: 11px; color: #999; margin-bottom: 14px; }
+
+  .photo-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  }
+  .photo-item {
+    position: relative; border-radius: 8px; overflow: hidden;
+    aspect-ratio: 4/5; cursor: pointer;
+  }
+  .photo-item img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .photo-item .delete-btn {
+    position: absolute; top: 4px; right: 4px;
+    background: rgba(220,38,38,0.9); color: white;
+    border: none; border-radius: 6px; width: 22px; height: 22px;
+    font-size: 12px; cursor: pointer; display: none;
+    align-items: center; justify-content: center;
+  }
+  .photo-item:hover .delete-btn { display: flex; }
+  .photo-count {
+    font-size: 11px; color: #999; font-weight: 600;
+    margin-top: 10px; text-align: center;
+  }
+  .manager-actions {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .manager-btn {
+    flex: 1; padding: 9px; border-radius: 8px; border: none;
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .manager-btn.add { background: var(--orange); color: white; }
+  .manager-btn.add:hover { background: #d4650a; }
+  .manager-btn.save { background: #111; color: white; }
+  .manager-btn.save:hover { background: #333; }
+  .manager-btn.save.saved { background: #16a34a; }
+  .manager-btn.shuffle { background: #f0f0f0; color: #555; }
+  .manager-btn.shuffle:hover { background: #e0e0e0; }
+  .photo-item.active { outline: 3px solid var(--orange); outline-offset: -3px; }
+  .unsaved-dot {
+    display: none; width: 8px; height: 8px; background: #ef4444;
+    border-radius: 50%; position: absolute; top: -2px; right: -2px;
+  }
+  .manager-toggle { position: fixed; bottom: 24px; right: 24px; }
+  .manager-toggle .badge {
+    position: absolute; top: -6px; right: -6px;
+    background: var(--orange); color: white; font-size: 10px; font-weight: 800;
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tip {
+    font-size: 10px; color: #bbb; text-align: center;
+    margin-top: 6px; font-style: italic;
+  }
+
+  /* Smooth photo transitions */
+  .t1 .bg, .t2a .bg, .t3 .bg { transition: background-image 0.4s ease; }
+
+  /* Fullscreen overlay */
+  .fullscreen-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .fullscreen-overlay.show { display: flex; }
+  .fullscreen-overlay .preview {
+    max-width: 90vw; max-height: 90vh; border-radius: 16px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.4);
+  }
+  .fullscreen-hint {
+    position: absolute; bottom: 20px; left: 50%;
+    transform: translateX(-50%); color: rgba(255,255,255,0.4);
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* Template hover for fullscreen hint */
+  .t1, .t2a, .t3 { cursor: zoom-in; transition: transform 0.2s; }
+  .t1:hover, .t2a:hover, .t3:hover { transform: scale(1.01); }
+
+  /* Combined workspace panel */
+  .workspace {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    max-width: 1400px; margin: 0 auto 24px; padding: 0 32px;
+  }
+  .workspace-card {
+    background: white; border-radius: 16px; padding: 28px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+  .workspace-card h3 {
+    font-size: 16px; font-weight: 800; margin-bottom: 2px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .workspace-card .sub { font-size: 12px; color: #999; margin-bottom: 16px; }
+
+  .post-text {
+    width: 100%; min-height: 220px; padding: 16px 18px;
+    border: 1.5px solid #e8e8e8; border-radius: 12px;
+    font-family: inherit; font-size: 13px; line-height: 1.7;
+    color: #333; resize: vertical; background: #fafafa;
+  }
+  .post-text:focus { outline: none; border-color: var(--orange); }
+  .post-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .post-btn {
+    padding: 8px 16px; border-radius: 8px; border: none;
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .post-btn.generate { background: var(--orange); color: white; }
+  .post-btn.generate:hover { background: #d4650a; }
+  .post-btn.copy { background: #111; color: white; }
+  .post-btn.copy:hover { background: #333; }
+  .post-btn.copied { background: #16a34a; }
+  .post-meta { font-size: 10px; color: #bbb; margin-top: 8px; }
+
+  /* Download all */
+  .download-all-wrap { text-align: center; margin: 10px 0 30px; }
+  .download-all-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--black); color: white; border: none;
+    padding: 14px 28px; border-radius: 12px;
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+  .download-all-btn:hover { background: #333; }
+
+  /* Help panel */
+  .help-toggle {
+    position: fixed; bottom: 24px; left: 24px; z-index: 900;
+    background: white; color: #333; border: 1.5px solid #ddd;
+    width: 44px; height: 44px; border-radius: 50%;
+    font-size: 18px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .help-toggle:hover { border-color: var(--orange); color: var(--orange); }
+  .help-panel {
+    display: none; position: fixed; bottom: 80px; left: 24px; z-index: 900;
+    background: white; border-radius: 16px; padding: 28px;
+    width: 420px; max-height: 75vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .help-panel.show { display: block; }
+  .help-panel h4 { font-size: 17px; font-weight: 900; margin-bottom: 4px; }
+  .help-panel .help-sub { font-size: 12px; color: #999; margin-bottom: 18px; }
+  .help-section { margin-bottom: 18px; }
+  .help-section h5 {
+    font-size: 13px; font-weight: 800; color: var(--orange);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+  }
+  .help-section p, .help-section li {
+    font-size: 12px; color: #555; line-height: 1.6;
+  }
+  .help-section ul { padding-left: 16px; }
+  .help-section li { margin-bottom: 4px; }
+  .help-key {
+    display: inline-block; background: #f0f0f0; padding: 2px 8px;
+    border-radius: 4px; font-size: 11px; font-weight: 700; color: #333;
+  }
+  .help-divider { height: 1px; background: #f0f0f0; margin: 16px 0; }
+  .template-wrap.is-locked { position: relative; }
+  .template-wrap.is-locked::after {
+    content: '🔒'; position: absolute; top: 28px; right: 8px;
+    font-size: 16px; opacity: 0.6;
+  }
+  .bw-on .bg { filter: grayscale(100%) !important; }
+  .t2a.bw-on .bg { filter: grayscale(100%) !important; }
+  .t2a.bw-on .grad { background: linear-gradient(0deg, var(--orange) 0%, rgba(238,114,3,0.85) 35%, rgba(0,0,0,0.15) 100%); }
+
+  /* ====== TEMPLATE 1: BOLD MODERN ====== */
+  .t1 {
+    width: var(--w); height: var(--h);
+    border-radius: 16px; overflow: hidden;
+    position: relative; box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+    background: #1a1f2e;
+  }
+  .t1 .bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0.45;
+  }
+  .t1 .grad {
+    position: absolute; inset: 0;
+    background: linear-gradient(170deg, rgba(26,31,46,0.7) 20%, rgba(26,31,46,0.4) 60%, rgba(26,31,46,0.85) 100%);
+  }
+  .t1 .inner {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; padding: 28px;
+  }
+  .t1 .top { display: flex; justify-content: space-between; align-items: center; }
+  .t1 .mid { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .t1 .bot { display: flex; justify-content: space-between; align-items: flex-end; }
+
+  .t1 .sub-label { font-size: 12px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 1.5px; }
+  .t1 .title { font-size: 28px; font-weight: 900; color: white; line-height: 1.12; }
+  .t1 .desc { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; max-width: 320px; }
+
+  .t1 .salary-box {
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 12px 18px;
+    display: flex; align-items: baseline; gap: 5px; color: white;
+  }
+  .t1 .salary-box .big { font-size: 26px; font-weight: 900; }
+  .t1 .salary-box .small { font-size: 11px; opacity: 0.6; }
+
+  .t1 .cta-btn {
+    background: var(--orange); color: white; padding: 10px 16px;
+    border-radius: 10px; font-size: 10px; font-weight: 700;
+    text-align: center; line-height: 1.2; white-space: nowrap;
+    max-width: 180px;
+  }
+
+  /* ====== TEMPLATE 2A: CINEMATIC ====== */
+  .t2a {
+    width: var(--w); height: var(--h);
+    border-radius: 16px; overflow: hidden;
+    position: relative; box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  }
+  .t2a .bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+  }
+  .t2a .grad {
+    position: absolute; inset: 0;
+    background: linear-gradient(0deg, var(--orange) 0%, rgba(238,114,3,0.85) 35%, rgba(0,0,0,0.1) 100%);
+  }
+  .t2a .inner {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; padding: 28px; justify-content: space-between;
+  }
+  .t2a .top { display: flex; justify-content: space-between; align-items: center; }
+  .t2a .content { display: flex; flex-direction: column; gap: 12px; }
+  .t2a .vacature-line {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: rgba(255,255,255,0.7);
+  }
+  .t2a h2 { font-size: 26px; font-weight: 900; color: white; line-height: 1.12; }
+  .t2a .desc { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.45; }
+  .t2a .info-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .t2a .info-pill {
+    background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px;
+    font-size: 11px; font-weight: 600; color: white;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .t2a .bot-row { display: flex; justify-content: space-between; align-items: center; }
+  .t2a .sal-badge {
+    background: white; border-radius: 12px; padding: 10px 18px;
+    display: flex; align-items: baseline; gap: 4px;
+  }
+  .t2a .sal-badge .big { font-size: 24px; font-weight: 900; color: var(--orange); }
+  .t2a .sal-badge .small { font-size: 10px; color: #888; }
+  .t2a .cta {
+    background: white; color: var(--black); padding: 10px 16px;
+    border-radius: 10px; font-size: 10px; font-weight: 800;
+    white-space: nowrap; max-width: 180px; text-align: center;
+  }
+
+
+
+  /* ====== TEMPLATE 3: GLASS ====== */
+  .t3 {
+    width: var(--w); height: var(--h);
+    border-radius: 16px; overflow: hidden;
+    position: relative; box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  }
+  .t3 .bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+  }
+  .t3 .grad {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 100%);
+  }
+  .t3 .inner {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; padding: 24px; justify-content: space-between;
+  }
+  .t3 .top { display: flex; justify-content: space-between; align-items: center; }
+  .t3 .glass-tag {
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px; padding: 6px 14px;
+    color: white; font-size: 11px; font-weight: 600;
+  }
+  .t3 .glass-card {
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 18px; padding: 24px;
+  }
+  .t3 .glass-card .badge {
+    display: inline-block; background: var(--orange); color: white;
+    padding: 4px 12px; border-radius: 50px;
+    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .t3 .glass-card h2 { font-size: 22px; font-weight: 900; color: white; line-height: 1.15; margin-bottom: 12px; }
+  .t3 .glass-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .t3 .chip {
+    background: rgba(255,255,255,0.12); padding: 6px 11px;
+    border-radius: 7px; color: white; font-size: 11px; font-weight: 500;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .t3 .bottom { display: flex; justify-content: space-between; align-items: center; }
+  .t3 .glass-salary {
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px; padding: 10px 16px;
+    color: white; display: flex; align-items: baseline; gap: 4px;
+  }
+  .t3 .glass-salary .big { font-size: 22px; font-weight: 900; }
+  .t3 .glass-salary .small { font-size: 10px; opacity: 0.6; }
+  .t3 .glass-cta {
+    background: var(--orange); color: white; padding: 10px 16px;
+    border-radius: 10px; font-size: 10px; font-weight: 700;
+    white-space: nowrap; max-width: 200px; text-align: center;
+  }
+
+  /* Shared */
+  .logo-row { display: flex; align-items: center; gap: 8px; }
+  .logo-row img { width: 32px; height: 32px; border-radius: 8px; }
+  .logo-row .name { font-size: 15px; font-weight: 800; color: white; }
+  .logo-row .name span { color: var(--orange); }
+  .tag-pill {
+    background: var(--orange); color: white; padding: 5px 13px;
+    border-radius: 50px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  /* ====== EDIT PANEL (now inside workspace) ====== */
+  .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .edit-grid .full { grid-column: span 2; }
+  .field label {
+    display: block; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 4px;
+  }
+  .field input, .field textarea {
+    width: 100%; padding: 11px 14px; border: 1.5px solid #e8e8e8;
+    border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 500;
+    transition: border-color 0.2s; background: #fafafa;
+  }
+  .field textarea { min-height: 56px; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--orange); }
+  .field textarea { min-height: 48px; resize: vertical; }
+
+  @media print {
+    .edit-panel, .page-title, .page-sub, .template-label, .refresh-btn { display: none; }
+    body { padding: 0; background: white; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">Employ Werkt! — Social Media Content Generator</div>
+<p class="page-sub">Maak social media posts voor LinkedIn & Instagram. Pas de vacature aan, kies je template, en download.</p>
+
+<div class="templates-grid">
+
+  <!-- ======== TEMPLATE 1: BOLD MODERN ======== -->
+  <div class="template-wrap">
+    <div class="template-label">Bold Modern</div>
+    <div class="t1" id="tpl1">
+      <div class="bg" id="bg1" style="background-image: url('assets/team-foto.jpg')"></div>
+      <div class="grad"></div>
+      <div class="inner">
+        <div class="top">
+          <div class="logo-row">
+            <img src="assets/employ-logo.png" alt="Employ">
+            <div class="name">Employ <span>Werkt!</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="glass-tag" style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:6px 14px; color:white; font-size:11px; font-weight:600;">employwerkt.nl</div>
+          </div>
+        </div>
+        <div class="mid">
+          <div class="sub-label">Wij zoeken een</div>
+          <div class="title" id="v-title-1">Financieel Administratief Medewerker</div>
+          <div class="desc" id="v-desc-1">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+            <span style="font-size:12px;">📍</span>
+            <span style="font-size:12px; color:rgba(255,255,255,0.55); font-weight:500;" id="v-loc-1">Hoogeveen</span>
+          </div>
+        </div>
+        <div class="bot">
+          <div class="salary-box">
+            <span class="small">Vanaf</span>
+            <span class="big" id="v-sal-1">€17</span>
+            <span class="small">bruto p/u</span>
+          </div>
+          <div class="cta-btn">Solliciteer via employwerkt.nl</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row-wrap">
+      <button class="ib" data-tip="Vastzetten" onclick="toggleLock('tpl1', this)">🔓</button>
+      <div class="sep"></div>
+      <button class="ib" data-tip="Nieuwe foto" onclick="refreshBg(1)">🔄</button>
+      <button class="ib" data-tip="Eigen foto" onclick="openUpload(1)">📷</button>
+      <button class="ib" data-tip="Zwart-wit" onclick="toggleBW('tpl1', this)">◐</button>
+      <div class="sep"></div>
+      <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl1', 'bold-modern')">⬇</button>
+    </div>
+  </div>
+
+  <!-- ======== TEMPLATE 2A: CINEMATIC ======== -->
+  <div class="template-wrap">
+    <div class="template-label">Cinematic</div>
+    <div class="t2a" id="tpl2a">
+      <div class="bg" id="bg2a" style="background-image: url('assets/foto-3.jpg')"></div>
+      <div class="grad"></div>
+      <div class="inner">
+        <div class="top">
+          <div class="logo-row">
+            <img src="assets/employ-logo.png" alt="Employ">
+            <div class="name">Employ <span>Werkt!</span></div>
+          </div>
+          <div class="glass-tag" style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:6px 14px; color:white; font-size:11px; font-weight:600;">employwerkt.nl</div>
+        </div>
+        <div class="content">
+          <div class="vacature-line">Vacature</div>
+          <h2 id="v-title-2a">Financieel Administratief Medewerker</h2>
+          <div class="desc" id="v-desc-2a">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</div>
+          <div class="info-row">
+            <div class="info-pill">📍 <span id="v-loc-2a">Hoogeveen</span></div>
+            <div class="info-pill">⏰ <span id="v-hrs-2a">32-40 uur</span></div>
+          </div>
+        </div>
+        <div class="bot-row">
+          <div class="sal-badge">
+            <span class="small">Vanaf</span>
+            <span class="big" id="v-sal-2a">€17</span>
+            <span class="small">p/u</span>
+          </div>
+          <div class="cta">Solliciteer via employwerkt.nl</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row-wrap">
+      <button class="ib" data-tip="Vastzetten" onclick="toggleLock('tpl2a', this)">🔓</button>
+      <div class="sep"></div>
+      <button class="ib" data-tip="Nieuwe foto" onclick="refreshBg('2a')">🔄</button>
+      <button class="ib" data-tip="Eigen foto" onclick="openUpload('2a')">📷</button>
+      <button class="ib" data-tip="Zwart-wit" onclick="toggleBW('tpl2a', this)">◐</button>
+      <div class="sep"></div>
+      <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl2a', 'cinematic')">⬇</button>
+    </div>
+  </div>
+
+
+  <!-- ======== TEMPLATE 3: GLASS ======== -->
+  <div class="template-wrap">
+    <div class="template-label">Glassmorphism</div>
+    <div class="t3" id="tpl3" style="isolation: isolate">
+      <div class="bg" id="bg3" style="background-image: url('assets/team-foto-2.jpg')"></div>
+      <div class="grad"></div>
+      <div class="inner">
+        <div class="top">
+          <div class="logo-row">
+            <img src="assets/employ-logo.png" alt="Employ">
+            <div class="name">Employ <span>Werkt!</span></div>
+          </div>
+          <div class="glass-tag">employwerkt.nl</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="glass-card">
+          <div class="badge">Vacature</div>
+          <h2 id="v-title-3">Financieel Administratief Medewerker</h2>
+          <div class="glass-chips">
+            <div class="chip">📍 <span id="v-loc-3">Hoogeveen</span></div>
+            <div class="chip">⏰ <span id="v-hrs-3">32-40 uur</span></div>
+            <div class="chip">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
+          </div>
+        </div>
+        <div class="bottom" style="margin-top: 12px;">
+          <div class="glass-salary">
+            <span class="small">Vanaf</span>
+            <span class="big" id="v-sal-3">€17</span>
+            <span class="small">bruto p/u</span>
+          </div>
+          <div class="glass-cta">Interesse? Kijk in de beschrijving ↓</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row-wrap">
+      <button class="ib" data-tip="Vastzetten" onclick="toggleLock('tpl3', this)">🔓</button>
+      <div class="sep"></div>
+      <button class="ib" data-tip="Nieuwe foto" onclick="refreshBg(3)">🔄</button>
+      <button class="ib" data-tip="Eigen foto" onclick="openUpload(3)">📷</button>
+      <button class="ib" data-tip="Zwart-wit" onclick="toggleBW('tpl3', this)">◐</button>
+      <div class="sep"></div>
+      <button class="ib primary" data-tip="Download" onclick="downloadTemplate('tpl3', 'glassmorphism')">⬇</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======== HELP PANEL ======== -->
+<button class="help-toggle" onclick="document.getElementById('helpPanel').classList.toggle('show')">?</button>
+<div class="help-panel" id="helpPanel">
+  <h4>Handleiding</h4>
+  <p class="help-sub">Employ Werkt! Social Media Content Generator — alle features op een rij</p>
+
+  <div class="help-section">
+    <h5>🎨 Templates</h5>
+    <p>Er zijn 3 template stijlen beschikbaar:</p>
+    <ul>
+      <li><strong>Bold Modern</strong> — Donkere achtergrond met foto, modern en strak</li>
+      <li><strong>Cinematic</strong> — Foto bovenin met oranje gradient naar beneden</li>
+      <li><strong>Glassmorphism</strong> — Fullscreen foto met frosted glass kaarten</li>
+    </ul>
+    <p>Klik op een template om een <strong>fullscreen preview</strong> te zien. Sluit met klik of <span class="help-key">ESC</span>.</p>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>✏️ Vacature aanpassen</h5>
+    <p>Gebruik het <strong>"Pas de vacature aan"</strong> paneel onderaan om de inhoud te wijzigen. Alle templates worden live bijgewerkt. Velden:</p>
+    <ul>
+      <li><strong>Functietitel</strong> — Naam van de vacature</li>
+      <li><strong>Salaris</strong> — Bruto uurloon (bijv. €17)</li>
+      <li><strong>Locatie</strong> — Werklocatie</li>
+      <li><strong>Uren</strong> — Werkuren per week</li>
+      <li><strong>Startdatum</strong> — Wanneer de vacature ingaat</li>
+      <li><strong>Beschrijving</strong> — Vraag of omschrijving voor de kandidaat</li>
+    </ul>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>🔒 Template vastzetten</h5>
+    <p>Klik <strong>🔓 Open</strong> om een template op slot te zetten. Een gelockte template wordt <strong>niet meer aangepast</strong> als je de vacature-info wijzigt. Handig als je meerdere vacatures tegelijk wil maken — lock de eerste, pas de info aan voor de volgende.</p>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>📷 Foto's beheren</h5>
+    <p>Per template heb je deze knoppen:</p>
+    <ul>
+      <li><strong>🔄 Nieuwe foto</strong> — Cyclet door de fotoselectie</li>
+      <li><strong>📷 Eigen foto</strong> — Upload een foto en kies:
+        <ul>
+          <li><em>Eenmalig gebruiken</em> — Alleen voor nu, verdwijnt bij volgende wissel</li>
+          <li><em>Toevoegen aan selectie</em> — Foto wordt permanent opgeslagen in de pool</li>
+        </ul>
+      </li>
+      <li><strong>◐ Zwart-wit</strong> — Maakt de achtergrond foto zwart-wit (tekst en knoppen blijven in kleur)</li>
+    </ul>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>🖼 Fotoselectie (rechtsonder)</h5>
+    <p>Klik op <strong>🖼 Fotoselectie</strong> rechtsonder om het fotobeheer te openen:</p>
+    <ul>
+      <li><strong>📷 Foto toevoegen</strong> — Upload nieuwe foto's (meerdere tegelijk mogelijk)</li>
+      <li><strong>🎲 Shuffle alles</strong> — Zet random foto's op alle 3 templates tegelijk</li>
+      <li><strong>💾 Opslaan</strong> — Slaat wijzigingen op (wordt rood bij onopgeslagen changes)</li>
+      <li><strong>Klik op een foto</strong> — Preview: zet die foto op alle 3 templates</li>
+      <li><strong>✕</strong> — Hover over een foto en klik ✕ om te verwijderen</li>
+      <li><strong>↩ Reset</strong> — Terug naar de standaard fotoselectie</li>
+    </ul>
+    <p>Foto's en wijzigingen blijven opgeslagen in je browser na het afsluiten, zolang je op 💾 klikt.</p>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>⬇ Downloaden</h5>
+    <ul>
+      <li><strong>⬇ Download</strong> (per template) — Download als PNG (1080x1350, 4:5 ratio)</li>
+      <li><strong>⬇ Download alle 3</strong> — Download alle templates in één klik</li>
+    </ul>
+    <p>Formaat is geoptimaliseerd voor LinkedIn en Instagram feed posts.</p>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>✨ LinkedIn Post Generator</h5>
+    <p>Onder de templates zit een automatische post tekst generator:</p>
+    <ul>
+      <li><strong>✨ Genereer post</strong> — Maakt een LinkedIn post met alle vacature-info, inclusief emoji's en hashtags. Klik meerdere keren voor een andere opening.</li>
+      <li><strong>📋 Kopieer tekst</strong> — Kopieert de tekst direct naar je clipboard</li>
+    </ul>
+    <p>De tekst is direct te plakken in LinkedIn naast je gedownloade template afbeelding.</p>
+  </div>
+
+  <div class="help-divider"></div>
+
+  <div class="help-section">
+    <h5>💡 Workflow tip</h5>
+    <p>Snelste manier om een vacature post te maken:</p>
+    <ul>
+      <li>1. Vul de vacature-info in onderaan</li>
+      <li>2. Kies je favoriete foto per template</li>
+      <li>3. Download de template die je het mooist vindt</li>
+      <li>4. Genereer en kopieer de LinkedIn tekst</li>
+      <li>5. Plak beide in LinkedIn → klaar!</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======== FULLSCREEN PREVIEW ======== -->
+<div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+  <img class="preview" id="fullscreenImg" src="" alt="Preview">
+  <div class="fullscreen-hint">Klik om te sluiten · ESC</div>
+</div>
+
+<!-- ======== DOWNLOAD ALL ======== -->
+<div class="download-all-wrap">
+  <button class="download-all-btn" onclick="downloadAll()">⬇ Download alle 3 templates</button>
+</div>
+
+<!-- ======== WORKSPACE: EDIT + POST SIDE BY SIDE ======== -->
+<div class="workspace">
+
+  <!-- LEFT: Vacature aanpassen -->
+  <div class="workspace-card">
+    <h3>✏️ Vacature aanpassen</h3>
+    <p class="sub">Alle templates worden live bijgewerkt</p>
+    <div class="edit-grid">
+      <div class="field full">
+        <label>Functietitel</label>
+        <input type="text" value="Financieel Administratief Medewerker" id="inp-title">
+      </div>
+      <div class="field">
+        <label>Salaris (bruto p/u)</label>
+        <input type="text" value="€17" id="inp-sal">
+      </div>
+      <div class="field">
+        <label>Locatie</label>
+        <input type="text" value="Hoogeveen" id="inp-loc">
+      </div>
+      <div class="field">
+        <label>Uren</label>
+        <input type="text" value="32-40 uur" id="inp-hrs">
+      </div>
+      <div class="field">
+        <label>Startdatum</label>
+        <input type="text" value="Per 1 juli" id="inp-start">
+      </div>
+      <div class="field full">
+        <label>Beschrijving / vraag aan kandidaat</label>
+        <textarea id="inp-desc">Werk jij graag met cijfers en zorg jij ervoor dat de administratie altijd klopt?</textarea>
+      </div>
+      <div class="field full">
+        <label>Call-to-action (knop op de templates)</label>
+        <div style="display:flex; gap:8px;">
+          <select id="inp-cta" style="flex:1; padding:11px 14px; border:1.5px solid #e8e8e8; border-radius:10px; font-family:inherit; font-size:14px; font-weight:500; background:#fafafa; cursor:pointer; appearance:auto;">
+            <option value="Solliciteer via employwerkt.nl">Solliciteer via employwerkt.nl</option>
+            <option value="Interesse? Kijk in de beschrijving ↓">Interesse? Kijk in de beschrijving ↓</option>
+            <option value="Solliciteer via onze site!">Solliciteer via onze site!</option>
+            <option value="Solliciteer snel!">Solliciteer snel!</option>
+            <option value="custom">Eigen tekst...</option>
+          </select>
+          <input type="text" id="inp-cta-custom" placeholder="Typ je eigen CTA..." style="flex:1; display:none; padding:11px 14px; border:1.5px solid #e8e8e8; border-radius:10px; font-family:inherit; font-size:14px; font-weight:500; background:#fafafa;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: LinkedIn Post Generator -->
+  <div class="workspace-card">
+    <h3>✨ LinkedIn Post Generator</h3>
+    <p class="sub">Genereer een post tekst en kopieer naar LinkedIn</p>
+    <textarea class="post-text" id="postText" readonly placeholder="Klik 'Genereer post' om een LinkedIn tekst te maken..."></textarea>
+    <div class="post-actions">
+      <button class="post-btn generate" onclick="generatePost()">✨ Genereer post</button>
+      <button class="post-btn copy" id="copyBtn" onclick="copyPost()">📋 Kopieer tekst</button>
+    </div>
+    <div class="post-meta" id="postMeta"></div>
+  </div>
+
+</div>
+
+<!-- ======== PHOTO MANAGER ======== -->
+<button class="manager-toggle" onclick="toggleManager()">🖼 Fotoselectie <span class="badge" id="photoBadge">0</span></button>
+<div class="manager-panel" id="managerPanel">
+  <h4>Fotoselectie</h4>
+  <p class="sub">Klik op een foto om hem op alle templates te zetten. Klik ✕ om te verwijderen.</p>
+  <div class="manager-actions">
+    <button class="manager-btn add" onclick="document.getElementById('managerUpload').click()">📷 Foto toevoegen</button>
+    <button class="manager-btn shuffle" onclick="shuffleAll()">🎲 Shuffle alles</button>
+    <button class="manager-btn save" id="saveBtn" onclick="saveAndConfirm()">💾 Opslaan</button>
+  </div>
+  <input type="file" accept="image/*" id="managerUpload" style="display:none" multiple>
+  <div class="photo-grid" id="photoGrid"></div>
+  <div class="photo-count" id="photoCount"></div>
+  <div class="tip">Klik op een foto → preview op alle templates</div>
+  <button onclick="resetPhotos()" style="margin-top:8px; width:100%; padding:8px; border:1.5px solid #ddd; border-radius:8px; background:white; font-family:inherit; font-size:11px; font-weight:600; color:#999; cursor:pointer;">↩ Reset naar standaard</button>
+</div>
+
+<!-- ======== UPLOAD MODAL ======== -->
+<div class="upload-modal" id="uploadModal">
+  <div class="upload-box">
+    <h4>Eigen foto uploaden</h4>
+    <p>Kies een foto en bepaal of je hem eenmalig wil gebruiken of toevoegen aan de selectie.</p>
+    <input type="file" accept="image/*" class="upload-input" id="uploadInput">
+    <img class="preview-img" id="uploadPreview" src="" alt="Preview" style="display:none">
+    <div class="btn-group">
+      <button class="btn-choice btn-once" id="btnOnce" style="display:none" onclick="usePhoto('once')">Eenmalig gebruiken</button>
+      <button class="btn-choice btn-add" id="btnAdd" style="display:none" onclick="usePhoto('add')">Toevoegen aan selectie</button>
+      <button class="btn-choice btn-once" onclick="document.getElementById('uploadInput').click()">📁 Kies foto</button>
+      <button class="btn-cancel" onclick="closeUpload()">Annuleren</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// Download template as PNG
+function downloadTemplate(elementId, name) {
+  const el = document.getElementById(elementId);
+  const btn = event.target;
+  btn.textContent = '⏳ Laden...';
+
+  // Temporarily remove backdrop-filter (html2canvas can't handle it)
+  const blurEls = el.querySelectorAll('[style*="backdrop"], .glass-card, .glass-tag, .glass-salary, .glass-cta, .salary-box, .info-pill, .sal-badge');
+  const origStyles = [];
+  el.querySelectorAll('*').forEach(child => {
+    const cs = getComputedStyle(child);
+    if (cs.backdropFilter && cs.backdropFilter !== 'none') {
+      origStyles.push({ el: child, val: child.style.backdropFilter, wval: child.style.webkitBackdropFilter });
+      child.style.backdropFilter = 'none';
+      child.style.webkitBackdropFilter = 'none';
+      // Make backgrounds more opaque to compensate
+      if (cs.backgroundColor.includes('0.1') || cs.backgroundColor.includes('0.12') || cs.backgroundColor.includes('0.15')) {
+        child.style.backgroundColor = 'rgba(60,60,60,0.85)';
+        origStyles[origStyles.length - 1].bg = child.style.backgroundColor;
+      }
+    }
+  });
+
+  html2canvas(el, {
+    scale: 2.5,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
+    logging: false,
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `employ-vacature-${name}.png`;
+    link.href = canvas.toDataURL('image/png', 0.95);
+    link.click();
+    btn.textContent = '⬇ Download';
+  }).catch((err) => {
+    console.error(err);
+    btn.textContent = '⬇ Download';
+    alert('Download mislukt: ' + err.message);
+  }).finally(() => {
+    // Restore backdrop-filter
+    origStyles.forEach(s => {
+      s.el.style.backdropFilter = s.val || '';
+      s.el.style.webkitBackdropFilter = s.wval || '';
+      if (s.bg) s.el.style.backgroundColor = '';
+    });
+  });
+}
+
+// Fullscreen preview — click any template
+document.querySelectorAll('.t1, .t2a, .t3').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target.closest('button') || e.target.closest('input')) return;
+    html2canvas(this, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: null, logging: false })
+      .then(canvas => {
+        document.getElementById('fullscreenImg').src = canvas.toDataURL('image/png');
+        document.getElementById('fullscreenOverlay').classList.add('show');
+      });
+  });
+});
+
+function closeFullscreen() {
+  document.getElementById('fullscreenOverlay').classList.remove('show');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFullscreen(); });
+
+// Download all 3 templates
+async function downloadAll() {
+  const btn = event.target.closest('button');
+  btn.textContent = '⏳ Bezig met downloaden...';
+  const templates = [
+    { id: 'tpl1', name: 'bold-modern' },
+    { id: 'tpl2a', name: 'cinematic' },
+    { id: 'tpl3', name: 'glassmorphism' },
+  ];
+  for (const t of templates) {
+    const el = document.getElementById(t.id);
+    try {
+      const canvas = await html2canvas(el, { scale: 2.5, useCORS: true, allowTaint: true, backgroundColor: null, logging: false });
+      const link = document.createElement('a');
+      link.download = `employ-${t.name}.png`;
+      link.href = canvas.toDataURL('image/png', 0.95);
+      link.click();
+      await new Promise(r => setTimeout(r, 500));
+    } catch(e) { console.error(e); }
+  }
+  btn.textContent = '✅ Gedownload!';
+  setTimeout(() => { btn.textContent = '⬇ Download alle 3 templates'; }, 2000);
+}
+
+// LinkedIn post generator
+function generatePost() {
+  const title = document.getElementById('inp-title').value;
+  const loc = document.getElementById('inp-loc').value;
+  const hrs = document.getElementById('inp-hrs').value;
+  const sal = document.getElementById('inp-sal').value;
+  const desc = document.getElementById('inp-desc').value;
+  const start = document.getElementById('inp-start').value;
+
+  const hooks = [
+    `${title} gezocht! 📢`,
+    `Wij zoeken een ${title}! 🔍`,
+    `Ben jij onze nieuwe ${title}? 💼`,
+    `Vacature: ${title} in ${loc} 📋`,
+    `${title} — heb jij interesse? 👇`,
+    `Wij zijn op zoek naar een ${title} in ${loc}! 🙌`,
+  ];
+  const hook = hooks[Math.floor(Math.random() * hooks.length)];
+
+  const closings = [
+    `Interesse? Bel ons op 088 088 9009 of solliciteer via www.employwerkt.nl 📞`,
+    `Herken jij jezelf hierin? Neem contact op via 088 088 9009 of bekijk de vacature op www.employwerkt.nl 🚀`,
+    `Klinkt dit als iets voor jou? Bel 088 088 9009 of solliciteer direct via www.employwerkt.nl ✉️`,
+    `Reageer via www.employwerkt.nl of bel ons op 088 088 9009. Ken je iemand? Tag diegene! 🙌`,
+    `Neem contact op via 088 088 9009 of stuur een DM. Solliciteren kan ook via www.employwerkt.nl 💬`,
+  ];
+  const closing = closings[Math.floor(Math.random() * closings.length)];
+
+  const post = `${hook}
+
+${desc}
+
+📍 Locatie: ${loc}
+⏰ ${hrs} per week
+💰 Vanaf ${sal} bruto per uur
+📅 ${start}
+
+${closing}
+
+#vacature #${loc.toLowerCase().replace(/\s+/g, '')} #uitzendbureau #werkzoeken #employ #werk #${title.toLowerCase().split(' ')[0]}`;
+
+  document.getElementById('postText').value = post;
+  document.getElementById('postMeta').textContent = `${post.length} karakters · LinkedIn max: 3.000`;
+}
+
+function copyPost() {
+  const text = document.getElementById('postText').value;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.classList.add('copied');
+    btn.textContent = '✅ Gekopieerd!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋 Kopieer tekst';
+    }, 1500);
+  });
+}
+
+// Lock/unlock templates
+const lockedTemplates = new Set();
+
+function toggleLock(templateId, btn) {
+  const wrap = btn.closest('.template-wrap');
+  if (lockedTemplates.has(templateId)) {
+    lockedTemplates.delete(templateId);
+    wrap.classList.remove('is-locked');
+    btn.classList.remove('active');
+    btn.textContent = '🔓';
+    btn.setAttribute('data-tip', 'Vastzetten');
+  } else {
+    lockedTemplates.add(templateId);
+    wrap.classList.add('is-locked');
+    btn.classList.add('active');
+    btn.textContent = '🔒';
+    btn.setAttribute('data-tip', 'Loslaten');
+  }
+}
+
+// Check if element belongs to a locked template
+function isLocked(elId) {
+  if (elId.includes('2a')) return lockedTemplates.has('tpl2a');
+  if (elId.includes('-1')) return lockedTemplates.has('tpl1');
+  if (elId.includes('-3')) return lockedTemplates.has('tpl3');
+  return false;
+}
+
+// Photo manager panel
+let hasUnsavedChanges = false;
+
+function toggleManager() {
+  const panel = document.getElementById('managerPanel');
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) renderPhotoGrid();
+}
+
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML = '';
+  photos.forEach((src, i) => {
+    const item = document.createElement('div');
+    item.className = 'photo-item';
+    item.onclick = () => previewOnAll(src);
+    item.innerHTML = `
+      <img src="${src}" alt="Foto ${i + 1}">
+      <button class="delete-btn" onclick="removePhoto(${i}, event)">✕</button>
+    `;
+    grid.appendChild(item);
+  });
+  document.getElementById('photoCount').textContent = photos.length + ' foto\'s in selectie';
+  document.getElementById('photoBadge').textContent = photos.length;
+}
+
+function removePhoto(index, e) {
+  e.stopPropagation();
+  if (photos.length <= 1) return alert('Je moet minimaal 1 foto in de selectie hebben.');
+  photos.splice(index, 1);
+  hasUnsavedChanges = true;
+  updateSaveBtn();
+  renderPhotoGrid();
+}
+
+function resetPhotos() {
+  if (!confirm('Weet je zeker dat je terug wil naar de standaard foto\'s?')) return;
+  photos.length = 0;
+  defaultPhotos.forEach(p => photos.push(p));
+  hasUnsavedChanges = true;
+  updateSaveBtn();
+  renderPhotoGrid();
+}
+
+// Preview a photo on all templates at once
+function previewOnAll(src) {
+  ['bg1', 'bg2a', 'bg3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.backgroundImage = `url('${src}')`;
+  });
+}
+
+// Shuffle: random foto op elke template
+function shuffleAll() {
+  ['bg1', 'bg2a', 'bg3'].forEach(id => {
+    const randomPhoto = photos[Math.floor(Math.random() * photos.length)];
+    const el = document.getElementById(id);
+    if (el) el.style.backgroundImage = `url('${randomPhoto}')`;
+  });
+}
+
+// Save with confirmation
+function saveAndConfirm() {
+  savePhotos();
+  hasUnsavedChanges = false;
+  const btn = document.getElementById('saveBtn');
+  btn.classList.add('saved');
+  btn.textContent = '✅ Opgeslagen!';
+  setTimeout(() => {
+    btn.classList.remove('saved');
+    btn.textContent = '💾 Opslaan';
+  }, 1500);
+}
+
+function updateSaveBtn() {
+  const btn = document.getElementById('saveBtn');
+  if (hasUnsavedChanges) {
+    btn.style.background = '#ef4444';
+    btn.textContent = '💾 Opslaan*';
+  }
+}
+
+// Upload photos via manager panel (supports multiple)
+document.getElementById('managerUpload').addEventListener('change', function(e) {
+  const files = Array.from(e.target.files);
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      photos.push(ev.target.result);
+      loaded++;
+      if (loaded === files.length) {
+        hasUnsavedChanges = true;
+        updateSaveBtn();
+        renderPhotoGrid();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+});
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('photoBadge').textContent = photos.length;
+  generatePost();
+});
+
+// Upload custom photo
+let uploadTargetTemplate = null;
+let uploadedDataUrl = null;
+
+function openUpload(templateId) {
+  uploadTargetTemplate = templateId;
+  uploadedDataUrl = null;
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('btnOnce').style.display = 'none';
+  document.getElementById('btnAdd').style.display = 'none';
+  document.getElementById('uploadModal').classList.add('show');
+}
+
+function closeUpload() {
+  document.getElementById('uploadModal').classList.remove('show');
+  uploadTargetTemplate = null;
+  uploadedDataUrl = null;
+}
+
+document.getElementById('uploadInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    uploadedDataUrl = ev.target.result;
+    const preview = document.getElementById('uploadPreview');
+    preview.src = uploadedDataUrl;
+    preview.style.display = 'block';
+    document.getElementById('btnOnce').style.display = 'block';
+    document.getElementById('btnAdd').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+function usePhoto(mode) {
+  if (!uploadedDataUrl || !uploadTargetTemplate) return;
+  // Set as background
+  const bgEl = document.getElementById('bg' + uploadTargetTemplate);
+  if (bgEl) bgEl.style.backgroundImage = `url('${uploadedDataUrl}')`;
+
+  // Add to photo pool if requested
+  if (mode === 'add') {
+    photos.push(uploadedDataUrl);
+    hasUnsavedChanges = true;
+    updateSaveBtn();
+    // Show confirmation
+    document.getElementById('btnAdd').textContent = '✅ Toegevoegd aan selectie!';
+    setTimeout(() => {
+      document.getElementById('btnAdd').textContent = 'Toevoegen aan selectie';
+      closeUpload();
+    }, 800);
+  } else {
+    closeUpload();
+  }
+}
+
+// Close modal on backdrop click
+document.getElementById('uploadModal').addEventListener('click', function(e) {
+  if (e.target === this) closeUpload();
+});
+
+// Toggle black & white on background photo only
+function toggleBW(templateId, btn) {
+  const el = document.getElementById(templateId);
+  el.classList.toggle('bw-on');
+  btn.classList.toggle('active');
+  btn.setAttribute('data-tip', el.classList.contains('bw-on') ? 'Kleur' : 'Zwart-wit');
+}
+
+// Employ website photos pool
+const defaultPhotos = [
+  'assets/team-foto.jpg',
+  'assets/team-foto-2.jpg',
+  'assets/foto-1.jpg',
+  'assets/foto-2.jpg',
+  'assets/foto-3.jpg',
+  'assets/foto-6.jpg',
+  'assets/foto-7.jpg',
+  'assets/foto-8.jpg',
+  'assets/vacature-yanou.jpg',
+  'assets/vacature-bouw.jpg',
+  'assets/vacature-schilder.jpg',
+];
+
+// Load from localStorage or use defaults
+function loadPhotos() {
+  const saved = localStorage.getItem('employ-photos');
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e) {}
+  }
+  return [...defaultPhotos];
+}
+function savePhotos() {
+  localStorage.setItem('employ-photos', JSON.stringify(photos));
+}
+
+const photos = loadPhotos();
+
+// Track current photo per template
+const currentPhoto = { 1: 0, 2: 1, 3: 2 };
+
+function refreshBg(id) {
+  if (!currentPhoto[id]) currentPhoto[id] = Math.floor(Math.random() * photos.length);
+  currentPhoto[id] = (currentPhoto[id] + 1) % photos.length;
+  const url = photos[currentPhoto[id]];
+  const bgEl = document.getElementById('bg' + id);
+  if (bgEl) bgEl.style.backgroundImage = `url('${url}')`;
+}
+
+// Live update all templates from edit panel
+const fields = {
+  'inp-title': (v) => {
+    ['v-title-1','v-title-2a','v-title-3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = v;
+    });
+  },
+  'inp-sal': (v) => {
+    ['v-sal-1','v-sal-2a','v-sal-3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = v;
+    });
+    const sc = document.getElementById('v-sal-chip-3');
+    if (sc && !isLocked('v-sal-chip-3')) sc.textContent = 'Vanaf ' + v + ' p/u';
+  },
+  'inp-loc': (v) => {
+    ['v-loc-1','v-loc-2a','v-loc-3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = v;
+    });
+  },
+  'inp-hrs': (v) => {
+    ['v-hrs-2a','v-hrs-3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = v;
+    });
+  },
+  'inp-start': (v) => {},
+  'inp-desc': (v) => {
+    ['v-desc-1','v-desc-2a'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = v;
+    });
+  },
+};
+
+// CTA dropdown handler
+function updateAllCTAs(text) {
+  document.querySelectorAll('.cta-btn, .cta, .glass-cta').forEach(el => {
+    // Respect lock
+    const tpl = el.closest('[id^="tpl"]');
+    if (tpl && lockedTemplates.has(tpl.id)) return;
+    el.textContent = text;
+  });
+}
+
+document.getElementById('inp-cta').addEventListener('change', function() {
+  const custom = document.getElementById('inp-cta-custom');
+  if (this.value === 'custom') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+    updateAllCTAs(this.value);
+  }
+});
+
+document.getElementById('inp-cta-custom').addEventListener('input', function() {
+  if (this.value) updateAllCTAs(this.value);
+});
+
+Object.keys(fields).forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    fields[id](this.value);
+  });
+});
+</script>
+
+</body>
+</html>
