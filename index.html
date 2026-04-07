@@ -849,6 +849,10 @@
       <div class="field">
         <label>Salaris (bruto p/u)</label>
         <input type="text" value="€17" id="inp-sal">
+        <label style="display:flex; align-items:center; gap:6px; margin-top:6px; font-size:12px; font-weight:600; color:#888; cursor:pointer; user-select:none;">
+          <input type="checkbox" id="inp-vanaf" checked style="accent-color:var(--orange); cursor:pointer;">
+          "Vanaf" tonen
+        </label>
       </div>
       <div class="field">
         <label>Locatie</label>
@@ -1068,7 +1072,7 @@ ${desc}
 
 📍 Locatie: ${loc}
 ⏰ ${hrs} per week
-💰 Vanaf ${sal} bruto per uur
+💰 ${document.getElementById('inp-vanaf').checked ? 'Vanaf ' : ''}${sal} bruto per uur
 📅 ${start}
 
 ${closing}
@@ -1363,13 +1367,20 @@ const fields = {
     });
   },
   'inp-sal': (v) => {
+    const vanaf = document.getElementById('inp-vanaf').checked;
+    const prefix = vanaf ? 'Vanaf ' : '';
     ['v-sal-1','v-sal-2a','v-sal-3'].forEach(id => {
       const el = document.getElementById(id);
       if (el && !isLocked(id)) el.textContent = v;
     });
     ['v-sal-info-1','v-sal-info-2a','v-sal-chip-3'].forEach(id => {
       const el = document.getElementById(id);
-      if (el && !isLocked(id)) el.textContent = 'Vanaf ' + v + ' p/u';
+      if (el && !isLocked(id)) el.textContent = prefix + v + ' p/u';
+    });
+    // Update "Vanaf" label in salary boxes (first .small child only)
+    document.querySelectorAll('.salary-box, .sal-badge, .glass-salary').forEach(box => {
+      const firstSmall = box.querySelector('.small');
+      if (firstSmall) firstSmall.textContent = vanaf ? 'Vanaf' : '';
     });
   },
   'inp-loc': (v) => {
@@ -1395,6 +1406,12 @@ const fields = {
     });
   },
 };
+
+// "Vanaf" toggle — re-trigger salary update when toggled
+document.getElementById('inp-vanaf').addEventListener('change', function() {
+  const sal = document.getElementById('inp-sal').value;
+  fieldMap['inp-sal'](sal);
+});
 
 // CTA dropdown handler
 function updateAllCTAs(text) {
