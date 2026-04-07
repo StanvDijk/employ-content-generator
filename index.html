@@ -1410,7 +1410,7 @@ const fields = {
 // "Vanaf" toggle — re-trigger salary update when toggled
 document.getElementById('inp-vanaf').addEventListener('change', function() {
   const sal = document.getElementById('inp-sal').value;
-  fieldMap['inp-sal'](sal);
+  fields['inp-sal'](sal);
 });
 
 // CTA dropdown handler
