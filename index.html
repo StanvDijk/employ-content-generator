@@ -1372,10 +1372,23 @@ const fields = {
   'inp-sal': (v) => {
     const vanaf = document.getElementById('inp-vanaf').checked;
     const prefix = vanaf ? 'Vanaf ' : '';
+    const isLong = vanaf && v.includes(',');
     ['v-sal-1','v-sal-2a','v-sal-3'].forEach(id => {
       const el = document.getElementById(id);
-      if (el && !isLocked(id)) el.textContent = v;
+      if (el && !isLocked(id)) {
+        el.textContent = v;
+        // Shrink font when Vanaf + comma decimal to prevent overflow
+        el.style.fontSize = '';
+      }
     });
+    // Shrink big salary numbers per template when combo is tight
+    const bigEl1 = document.getElementById('v-sal-1');
+    const bigEl2 = document.getElementById('v-sal-2a');
+    const bigEl3 = document.getElementById('v-sal-3');
+    if (bigEl1) bigEl1.style.fontSize = isLong ? '20px' : '';
+    if (bigEl2) bigEl2.style.fontSize = isLong ? '19px' : '';
+    if (bigEl3) bigEl3.style.fontSize = isLong ? '18px' : '';
+
     ['v-sal-info-1','v-sal-info-2a','v-sal-chip-3'].forEach(id => {
       const el = document.getElementById(id);
       if (el && !isLocked(id)) el.textContent = prefix + v + ' p/u';
