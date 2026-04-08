@@ -1268,60 +1268,81 @@ function renderFolderTabs() {
   const container = document.getElementById('folderTabs');
   container.innerHTML = '';
   folders.forEach(f => {
-    const tab = document.createElement('button');
-    tab.className = 'folder-tab' + (f.name === currentFolder ? ' active' : '');
     const isDefault = f.name === 'Algemeen';
-    tab.innerHTML = f.name + (isDefault ? '' : `<span class="del-folder" onclick="deleteFolder('${f.id}','${f.name}',event)">✕</span>`);
-    tab.onclick = (e) => {
-      if (e.target.classList.contains('del-folder')) return;
-      currentFolder = f.name;
-      renderFolderTabs();
-      loadPhotosForFolder(f.name);
-    };
+    const isActive = f.name === currentFolder;
+    const tab = document.createElement('button');
+    tab.className = 'folder-tab' + (isActive ? ' active' : '');
+    tab.dataset.folder = f.name;
+    tab.dataset.folderId = f.id;
+    tab.textContent = f.name;
+    if (!isDefault) {
+      const del = document.createElement('span');
+      del.className = 'del-folder';
+      del.textContent = '✕';
+      del.dataset.action = 'delete-folder';
+      del.dataset.folderId = f.id;
+      del.dataset.folderName = f.name;
+      tab.appendChild(del);
+    }
     container.appendChild(tab);
   });
-  // Add folder button
   const addBtn = document.createElement('button');
   addBtn.className = 'add-folder-btn';
   addBtn.textContent = '+ Mapje';
-  addBtn.onclick = () => showFolderInput(container, addBtn);
+  addBtn.dataset.action = 'add-folder';
   container.appendChild(addBtn);
 }
 
-function showFolderInput(container, addBtn) {
-  addBtn.style.display = 'none';
-  const input = document.createElement('input');
-  input.className = 'folder-input';
-  input.placeholder = 'Mapnaam...';
-  container.appendChild(input);
-  input.focus();
-  const create = async () => {
-    const name = input.value.trim();
-    if (name && !folders.find(f => f.name === name)) {
-      await fbAddDoc(fbCollection(fbDb, 'folders'), { name, createdAt: Date.now() });
-      currentFolder = name;
-      loadFolders();
-    } else {
-      input.remove();
-      addBtn.style.display = '';
-    }
-  };
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') create(); if (e.key === 'Escape') { input.remove(); addBtn.style.display = ''; } });
-  input.addEventListener('blur', create);
-}
-
-async function deleteFolder(folderId, folderName, e) {
+// Single event handler for all folder tab clicks
+document.getElementById('folderTabs').addEventListener('click', async function(e) {
   e.stopPropagation();
-  if (!confirm(`Mapje "${folderName}" en alle foto's erin verwijderen?`)) return;
-  // Delete all photos in folder
-  const snap = await fbGetDocs(fbCollection(fbDb, 'photos'));
-  const toDelete = snap.docs.filter(d => d.data().folder === folderName);
-  for (const d of toDelete) await fbDeleteDoc(fbDoc(fbDb, 'photos', d.id));
+  const target = e.target;
+
   // Delete folder
-  await fbDeleteDoc(fbDoc(fbDb, 'folders', folderId));
-  currentFolder = 'Algemeen';
-  loadFolders();
-}
+  if (target.dataset.action === 'delete-folder') {
+    const folderId = target.dataset.folderId;
+    const folderName = target.dataset.folderName;
+    if (!confirm(`Mapje "${folderName}" en alle foto's erin verwijderen?`)) return;
+    const snap = await fbGetDocs(fbCollection(fbDb, 'photos'));
+    const toDelete = snap.docs.filter(d => d.data().folder === folderName);
+    for (const d of toDelete) await fbDeleteDoc(fbDoc(fbDb, 'photos', d.id));
+    await fbDeleteDoc(fbDoc(fbDb, 'folders', folderId));
+    currentFolder = 'Algemeen';
+    loadFolders();
+    return;
+  }
+
+  // Add new folder
+  if (target.dataset.action === 'add-folder') {
+    target.style.display = 'none';
+    const input = document.createElement('input');
+    input.className = 'folder-input';
+    input.placeholder = 'Mapnaam...';
+    this.appendChild(input);
+    input.focus();
+    const create = async () => {
+      const name = input.value.trim();
+      input.remove();
+      target.style.display = '';
+      if (name && !folders.find(f => f.name === name)) {
+        await fbAddDoc(fbCollection(fbDb, 'folders'), { name, createdAt: Date.now() });
+        currentFolder = name;
+        loadFolders();
+      }
+    };
+    input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') create(); if (ev.key === 'Escape') { input.remove(); target.style.display = ''; } });
+    input.addEventListener('blur', create);
+    return;
+  }
+
+  // Switch folder (click on tab or its text)
+  const tab = target.closest('.folder-tab');
+  if (tab && tab.dataset.folder) {
+    currentFolder = tab.dataset.folder;
+    renderFolderTabs();
+    loadPhotosForFolder(currentFolder);
+  }
+});
 
 async function loadPhotosForFolder(folder) {
   setStatus('Foto\'s laden...');
@@ -1353,11 +1374,15 @@ function renderPhotoGrid() {
   allPhotos.forEach((photo) => {
     const item = document.createElement('div');
     item.className = 'photo-item';
-    item.onclick = () => previewOnAll(photo.data);
-    const delAction = photo.isDefault ?
-      `deleteDefaultPhoto('${photo.path}',event)` :
-      `deletePhoto('${photo.id}',event)`;
-    item.innerHTML = `<img src="${photo.data}" alt="Foto"><button class="delete-btn" onclick="${delAction}">✕</button>`;
+    item.dataset.photoSrc = photo.data;
+    const btn = document.createElement('button');
+    btn.className = 'delete-btn';
+    btn.textContent = '✕';
+    btn.dataset.action = photo.isDefault ? 'delete-default' : 'delete-photo';
+    btn.dataset.photoId = photo.id;
+    if (photo.path) btn.dataset.photoPath = photo.path;
+    item.innerHTML = `<img src="${photo.data}" alt="Foto">`;
+    item.appendChild(btn);
     grid.appendChild(item);
   });
 
@@ -1365,26 +1390,37 @@ function renderPhotoGrid() {
   document.getElementById('photoBadge').textContent = allPhotos.length;
 }
 
-async function deletePhoto(photoId, e) {
+// Single event handler for all photo grid clicks
+document.getElementById('photoGrid').addEventListener('click', async function(e) {
   e.stopPropagation();
-  try {
-    await fbDeleteDoc(fbDoc(fbDb, 'photos', photoId));
-    loadPhotosForFolder(currentFolder);
-  } catch(e) {
-    alert('Fout bij verwijderen: ' + e.message);
-  }
-}
+  const target = e.target;
 
-async function deleteDefaultPhoto(path, e) {
-  e.stopPropagation();
-  try {
-    await fbAddDoc(fbCollection(fbDb, 'hidden-defaults'), { path, hiddenAt: Date.now() });
-    hiddenDefaults.push(path);
-    renderPhotoGrid();
-  } catch(e) {
-    alert('Fout bij verwijderen: ' + e.message);
+  // Delete firebase photo
+  if (target.dataset.action === 'delete-photo') {
+    try {
+      await fbDeleteDoc(fbDoc(fbDb, 'photos', target.dataset.photoId));
+      loadPhotosForFolder(currentFolder);
+    } catch(err) { alert('Fout: ' + err.message); }
+    return;
   }
-}
+
+  // Delete default photo
+  if (target.dataset.action === 'delete-default') {
+    try {
+      const path = target.dataset.photoPath;
+      await fbAddDoc(fbCollection(fbDb, 'hidden-defaults'), { path, hiddenAt: Date.now() });
+      hiddenDefaults.push(path);
+      renderPhotoGrid();
+    } catch(err) { alert('Fout: ' + err.message); }
+    return;
+  }
+
+  // Click on photo item → preview on all templates
+  const item = target.closest('.photo-item');
+  if (item && item.dataset.photoSrc) {
+    previewOnAll(item.dataset.photoSrc);
+  }
+});
 
 // Preview a photo on all templates at once
 function previewOnAll(src) {
