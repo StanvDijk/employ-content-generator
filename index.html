@@ -1551,19 +1551,27 @@ async function importVacature() {
       }
     }
 
-    // Trim description: first sentence + keep adding short follow-up sentences
+    // Trim description: keep first sentences, always end with "Dan zoeken wij jou!"
     if (desc) {
+      const closing = ' Dan zoeken wij jou!';
+      const maxLen = 140;
+      // Remove existing closing if already in text
+      desc = desc.replace(/\s*Dan zoeken wij jou[.!]*/gi, '').trim();
+      // Get sentences
       const sentences = desc.match(/[^.!?]+[.!?]+/g) || [desc];
       let short = sentences[0].trim();
       for (let i = 1; i < sentences.length; i++) {
         const next = sentences[i].trim();
-        // Keep adding if total stays under 150 chars OR next sentence is short (closing line like "Dan zoeken wij jou!")
-        if ((short + ' ' + next).length < 150 || next.length < 30) {
+        if ((short + ' ' + next + closing).length <= maxLen) {
           short += ' ' + next;
         } else break;
-        if (short.length > 160) break;
       }
-      desc = short.trim();
+      // If first sentence + closing is still too long, truncate at last space
+      if ((short + closing).length > maxLen) {
+        const cutLen = maxLen - closing.length;
+        short = short.substring(0, cutLen).replace(/\s+\S*$/, '') + '...';
+      }
+      desc = short + closing;
     }
 
     // Fill in fields
