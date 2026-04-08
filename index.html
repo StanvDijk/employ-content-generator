@@ -1205,6 +1205,7 @@ function isLocked(elId) {
 let currentFolder = 'Algemeen';
 let folders = [];
 let fbPhotos = []; // { id, data, folder }
+let hiddenDefaults = []; // default photo paths hidden by user
 let fbReady = false;
 
 function toggleManager() {
@@ -1253,6 +1254,9 @@ async function loadFolders() {
       await fbAddDoc(fbCollection(fbDb, 'folders'), { name: 'Algemeen', createdAt: Date.now() });
       return loadFolders();
     }
+    // Load hidden defaults list
+    const hiddenSnap = await fbGetDocs(fbCollection(fbDb, 'hidden-defaults'));
+    hiddenDefaults = hiddenSnap.docs.map(d => d.data().path);
     renderFolderTabs();
     loadPhotosForFolder(currentFolder);
   } catch(e) {
@@ -1336,10 +1340,11 @@ function renderPhotoGrid() {
   const grid = document.getElementById('photoGrid');
   grid.innerHTML = '';
 
-  // Show default assets in Algemeen if needed
-  const allPhotos = currentFolder === 'Algemeen' ?
-    [...defaultPhotos.map((src, i) => ({ id: 'default-' + i, data: src, isDefault: true })), ...fbPhotos] :
-    fbPhotos;
+  // Show default assets in Algemeen (filter out hidden ones)
+  const visibleDefaults = currentFolder === 'Algemeen' ?
+    defaultPhotos.filter(src => !hiddenDefaults.includes(src)).map((src, i) => ({ id: 'default-' + i, data: src, isDefault: true, path: src })) : [];
+
+  const allPhotos = [...visibleDefaults, ...fbPhotos];
 
   // Also update the global photos array for shuffle/refresh
   photos.length = 0;
@@ -1349,8 +1354,10 @@ function renderPhotoGrid() {
     const item = document.createElement('div');
     item.className = 'photo-item';
     item.onclick = () => previewOnAll(photo.data);
-    const delBtn = photo.isDefault ? '' : `<button class="delete-btn" onclick="deletePhoto('${photo.id}',event)">✕</button>`;
-    item.innerHTML = `<img src="${photo.data}" alt="Foto">${delBtn}`;
+    const delAction = photo.isDefault ?
+      `deleteDefaultPhoto('${photo.path}',event)` :
+      `deletePhoto('${photo.id}',event)`;
+    item.innerHTML = `<img src="${photo.data}" alt="Foto"><button class="delete-btn" onclick="${delAction}">✕</button>`;
     grid.appendChild(item);
   });
 
@@ -1363,6 +1370,17 @@ async function deletePhoto(photoId, e) {
   try {
     await fbDeleteDoc(fbDoc(fbDb, 'photos', photoId));
     loadPhotosForFolder(currentFolder);
+  } catch(e) {
+    alert('Fout bij verwijderen: ' + e.message);
+  }
+}
+
+async function deleteDefaultPhoto(path, e) {
+  e.stopPropagation();
+  try {
+    await fbAddDoc(fbCollection(fbDb, 'hidden-defaults'), { path, hiddenAt: Date.now() });
+    hiddenDefaults.push(path);
+    renderPhotoGrid();
   } catch(e) {
     alert('Fout bij verwijderen: ' + e.message);
   }
@@ -1419,6 +1437,10 @@ document.addEventListener('DOMContentLoaded', () => {
   generatePost();
 });
 
+// Prevent clicks inside panels from closing them (even after DOM re-renders)
+document.getElementById('managerPanel').addEventListener('click', e => e.stopPropagation());
+document.getElementById('helpPanel').addEventListener('click', e => e.stopPropagation());
+
 // Close panels when clicking outside
 document.addEventListener('click', (e) => {
   const helpPanel = document.getElementById('helpPanel');
@@ -1429,9 +1451,7 @@ document.addEventListener('click', (e) => {
 
   const managerPanel = document.getElementById('managerPanel');
   const managerToggle = document.querySelector('.manager-toggle');
-  // Check if click is inside panel OR if target was removed from DOM (e.g. re-rendered folder tabs)
-  const insideManager = managerPanel.contains(e.target) || !document.body.contains(e.target);
-  if (managerPanel.classList.contains('show') && !insideManager && !managerToggle.contains(e.target)) {
+  if (managerPanel.classList.contains('show') && !managerPanel.contains(e.target) && document.body.contains(e.target) && !managerToggle.contains(e.target)) {
     managerPanel.classList.remove('show');
   }
 });
