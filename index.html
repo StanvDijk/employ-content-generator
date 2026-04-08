@@ -1429,7 +1429,9 @@ document.addEventListener('click', (e) => {
 
   const managerPanel = document.getElementById('managerPanel');
   const managerToggle = document.querySelector('.manager-toggle');
-  if (managerPanel.classList.contains('show') && !managerPanel.contains(e.target) && !managerToggle.contains(e.target)) {
+  // Check if click is inside panel OR if target was removed from DOM (e.g. re-rendered folder tabs)
+  const insideManager = managerPanel.contains(e.target) || !document.body.contains(e.target);
+  if (managerPanel.classList.contains('show') && !insideManager && !managerToggle.contains(e.target)) {
     managerPanel.classList.remove('show');
   }
 });
