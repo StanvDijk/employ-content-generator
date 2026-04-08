@@ -1524,16 +1524,30 @@ async function importVacature() {
       if (euroMatch) salValue = '€' + euroMatch[1].replace('.', ',');
     }
 
-    // Extract description — first paragraph-like text after intro
+    // Extract description — find the intro pitch paragraph
+    // On employwerkt.nl this is the wervende tekst before "Solliciteer direct" or "Functieomschrijving"
     let desc = '';
-    // Look for the intro/pitch text (usually starts with a question or statement)
-    const paragraphs = doc.querySelectorAll('p');
-    for (const p of paragraphs) {
+    const allParagraphs = doc.querySelectorAll('p');
+    for (const p of allParagraphs) {
       const t = p.textContent.trim();
-      // Skip short texts, navigation, form labels etc.
-      if (t.length > 40 && t.length < 300 && !t.includes('©') && !t.includes('cookie')) {
+      // Skip junk: short, copyright, cookie, nav, metadata, breadcrumbs
+      if (t.length < 30 || t.length > 400) continue;
+      if (/©|cookie|privacy|menu|home|vacatures?\s*»/i.test(t)) continue;
+      if (/^(locatie|aantal uur|salaris|recruiter|contactpersoon)/i.test(t)) continue;
+      // Good candidate: contains a question mark or wervende taal
+      if (t.includes('?') || /zoek|werk|slag|jij|jou|wij|ben jij|heb jij|kun jij/i.test(t)) {
         desc = t;
         break;
+      }
+    }
+    // Fallback: just take first decent paragraph if no pitch found
+    if (!desc) {
+      for (const p of allParagraphs) {
+        const t = p.textContent.trim();
+        if (t.length > 40 && t.length < 400 && !/©|cookie|privacy|menu|home|»/i.test(t)) {
+          desc = t;
+          break;
+        }
       }
     }
 
