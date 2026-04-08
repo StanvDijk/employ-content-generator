@@ -7,6 +7,35 @@
 <title>Employ Werkt! - Social Media Content Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIinUkZ5e0Lo3RYTn67tKRhSe_H3b1nkc",
+    authDomain: "employ-content.firebaseapp.com",
+    projectId: "employ-content",
+    storageBucket: "employ-content.firebasestorage.app",
+    messagingSenderId: "897555899605",
+    appId: "1:897555899605:web:380474daf469f9443a2e5c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Make Firebase available globally
+  window.fbDb = db;
+  window.fbCollection = collection;
+  window.fbDoc = doc;
+  window.fbGetDocs = getDocs;
+  window.fbAddDoc = addDoc;
+  window.fbDeleteDoc = deleteDoc;
+  window.fbQuery = query;
+  window.fbOrderBy = orderBy;
+  window.fbOnSnapshot = onSnapshot;
+  window.firebaseReady = true;
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
 <style>
   :root {
     --orange: #EE7203;
@@ -167,6 +196,36 @@
   .manager-btn.shuffle { background: #f0f0f0; color: #555; }
   .manager-btn.shuffle:hover { background: #e0e0e0; }
   .photo-item.active { outline: 3px solid var(--orange); outline-offset: -3px; }
+  .folder-tabs {
+    display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .folder-tab {
+    padding: 5px 12px; border-radius: 8px; border: 1.5px solid #e0e0e0;
+    background: white; font-family: inherit; font-size: 11px;
+    font-weight: 600; color: #888; cursor: pointer; transition: all 0.15s;
+    position: relative;
+  }
+  .folder-tab:hover { border-color: #bbb; }
+  .folder-tab.active { background: #111; color: white; border-color: #111; }
+  .folder-tab .del-folder {
+    display: none; margin-left: 4px; color: #f87171; font-weight: 800;
+  }
+  .folder-tab:hover .del-folder { display: inline; }
+  .folder-tab.active .del-folder { color: #fca5a5; }
+  .add-folder-btn {
+    padding: 5px 10px; border-radius: 8px; border: 1.5px dashed #ccc;
+    background: transparent; font-family: inherit; font-size: 11px;
+    font-weight: 700; color: #bbb; cursor: pointer; transition: all 0.15s;
+  }
+  .add-folder-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .folder-input {
+    padding: 5px 10px; border-radius: 8px; border: 1.5px solid var(--orange);
+    font-family: inherit; font-size: 11px; font-weight: 600; width: 120px;
+    outline: none;
+  }
+  .fb-status {
+    font-size: 10px; color: #999; text-align: center; padding: 4px;
+  }
   .unsaved-dot {
     display: none; width: 8px; height: 8px; background: #ef4444;
     border-radius: 50%; position: absolute; top: -2px; right: -2px;
@@ -921,17 +980,17 @@
 <button class="manager-toggle" onclick="toggleManager()">🖼 Fotoselectie <span class="badge" id="photoBadge">0</span></button>
 <div class="manager-panel" id="managerPanel">
   <h4>Fotoselectie</h4>
-  <p class="sub">Klik op een foto om hem op alle templates te zetten. Klik ✕ om te verwijderen.</p>
+  <p class="sub">Gedeelde fotobibliotheek — zichtbaar voor iedereen. Klik foto → preview op templates.</p>
+  <div class="folder-tabs" id="folderTabs"></div>
   <div class="manager-actions">
     <button class="manager-btn add" onclick="document.getElementById('managerUpload').click()">📷 Foto toevoegen</button>
     <button class="manager-btn shuffle" onclick="shuffleAll()">🎲 Shuffle alles</button>
-    <button class="manager-btn save" id="saveBtn" onclick="saveAndConfirm()">💾 Opslaan</button>
   </div>
   <input type="file" accept="image/*" id="managerUpload" style="display:none" multiple>
   <div class="photo-grid" id="photoGrid"></div>
   <div class="photo-count" id="photoCount"></div>
   <div class="tip">Klik op een foto → preview op alle templates</div>
-  <button onclick="resetPhotos()" style="margin-top:8px; width:100%; padding:8px; border:1.5px solid #ddd; border-radius:8px; background:white; font-family:inherit; font-size:11px; font-weight:600; color:#999; cursor:pointer;">↩ Reset naar standaard</button>
+  <div class="fb-status" id="fbStatus"></div>
 </div>
 
 <!-- ======== UPLOAD MODAL ======== -->
@@ -1142,48 +1201,171 @@ function isLocked(elId) {
   return false;
 }
 
-// Photo manager panel
-let hasUnsavedChanges = false;
+// ======== FIREBASE PHOTO MANAGER WITH FOLDERS ========
+let currentFolder = 'Algemeen';
+let folders = [];
+let fbPhotos = []; // { id, data, folder }
+let fbReady = false;
 
 function toggleManager() {
   const panel = document.getElementById('managerPanel');
   panel.classList.toggle('show');
-  if (panel.classList.contains('show')) renderPhotoGrid();
+  if (panel.classList.contains('show')) {
+    if (fbReady) loadFolders();
+    else setStatus('Firebase laden...');
+  }
+}
+
+function setStatus(msg) {
+  const el = document.getElementById('fbStatus');
+  if (el) el.textContent = msg;
+}
+
+// Compress image to max 600px wide, JPEG quality 0.5 (~30-80KB)
+function compressImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxW = 600;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.5));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Load folders from Firestore
+async function loadFolders() {
+  try {
+    const snap = await fbGetDocs(fbQuery(fbCollection(fbDb, 'folders'), fbOrderBy('name')));
+    folders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Always have 'Algemeen'
+    if (!folders.find(f => f.name === 'Algemeen')) {
+      await fbAddDoc(fbCollection(fbDb, 'folders'), { name: 'Algemeen', createdAt: Date.now() });
+      return loadFolders();
+    }
+    renderFolderTabs();
+    loadPhotosForFolder(currentFolder);
+  } catch(e) {
+    setStatus('Fout bij laden: ' + e.message);
+  }
+}
+
+function renderFolderTabs() {
+  const container = document.getElementById('folderTabs');
+  container.innerHTML = '';
+  folders.forEach(f => {
+    const tab = document.createElement('button');
+    tab.className = 'folder-tab' + (f.name === currentFolder ? ' active' : '');
+    const isDefault = f.name === 'Algemeen';
+    tab.innerHTML = f.name + (isDefault ? '' : `<span class="del-folder" onclick="deleteFolder('${f.id}','${f.name}',event)">✕</span>`);
+    tab.onclick = (e) => {
+      if (e.target.classList.contains('del-folder')) return;
+      currentFolder = f.name;
+      renderFolderTabs();
+      loadPhotosForFolder(f.name);
+    };
+    container.appendChild(tab);
+  });
+  // Add folder button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-folder-btn';
+  addBtn.textContent = '+ Mapje';
+  addBtn.onclick = () => showFolderInput(container, addBtn);
+  container.appendChild(addBtn);
+}
+
+function showFolderInput(container, addBtn) {
+  addBtn.style.display = 'none';
+  const input = document.createElement('input');
+  input.className = 'folder-input';
+  input.placeholder = 'Mapnaam...';
+  container.appendChild(input);
+  input.focus();
+  const create = async () => {
+    const name = input.value.trim();
+    if (name && !folders.find(f => f.name === name)) {
+      await fbAddDoc(fbCollection(fbDb, 'folders'), { name, createdAt: Date.now() });
+      currentFolder = name;
+      loadFolders();
+    } else {
+      input.remove();
+      addBtn.style.display = '';
+    }
+  };
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') create(); if (e.key === 'Escape') { input.remove(); addBtn.style.display = ''; } });
+  input.addEventListener('blur', create);
+}
+
+async function deleteFolder(folderId, folderName, e) {
+  e.stopPropagation();
+  if (!confirm(`Mapje "${folderName}" en alle foto's erin verwijderen?`)) return;
+  // Delete all photos in folder
+  const snap = await fbGetDocs(fbCollection(fbDb, 'photos'));
+  const toDelete = snap.docs.filter(d => d.data().folder === folderName);
+  for (const d of toDelete) await fbDeleteDoc(fbDoc(fbDb, 'photos', d.id));
+  // Delete folder
+  await fbDeleteDoc(fbDoc(fbDb, 'folders', folderId));
+  currentFolder = 'Algemeen';
+  loadFolders();
+}
+
+async function loadPhotosForFolder(folder) {
+  setStatus('Foto\'s laden...');
+  try {
+    const snap = await fbGetDocs(fbCollection(fbDb, 'photos'));
+    fbPhotos = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => p.folder === folder);
+    // Also include default assets for 'Algemeen' if no firebase photos yet
+    renderPhotoGrid();
+    setStatus('');
+  } catch(e) {
+    setStatus('Fout: ' + e.message);
+  }
 }
 
 function renderPhotoGrid() {
   const grid = document.getElementById('photoGrid');
   grid.innerHTML = '';
-  photos.forEach((src, i) => {
+
+  // Show default assets in Algemeen if needed
+  const allPhotos = currentFolder === 'Algemeen' ?
+    [...defaultPhotos.map((src, i) => ({ id: 'default-' + i, data: src, isDefault: true })), ...fbPhotos] :
+    fbPhotos;
+
+  // Also update the global photos array for shuffle/refresh
+  photos.length = 0;
+  allPhotos.forEach(p => photos.push(p.data));
+
+  allPhotos.forEach((photo) => {
     const item = document.createElement('div');
     item.className = 'photo-item';
-    item.onclick = () => previewOnAll(src);
-    item.innerHTML = `
-      <img src="${src}" alt="Foto ${i + 1}">
-      <button class="delete-btn" onclick="removePhoto(${i}, event)">✕</button>
-    `;
+    item.onclick = () => previewOnAll(photo.data);
+    const delBtn = photo.isDefault ? '' : `<button class="delete-btn" onclick="deletePhoto('${photo.id}',event)">✕</button>`;
+    item.innerHTML = `<img src="${photo.data}" alt="Foto">${delBtn}`;
     grid.appendChild(item);
   });
-  document.getElementById('photoCount').textContent = photos.length + ' foto\'s in selectie';
-  document.getElementById('photoBadge').textContent = photos.length;
+
+  document.getElementById('photoCount').textContent = allPhotos.length + ' foto\'s' + (currentFolder !== 'Algemeen' ? ' in ' + currentFolder : '');
+  document.getElementById('photoBadge').textContent = allPhotos.length;
 }
 
-function removePhoto(index, e) {
+async function deletePhoto(photoId, e) {
   e.stopPropagation();
-  if (photos.length <= 1) return alert('Je moet minimaal 1 foto in de selectie hebben.');
-  photos.splice(index, 1);
-  hasUnsavedChanges = true;
-  updateSaveBtn();
-  renderPhotoGrid();
-}
-
-function resetPhotos() {
-  if (!confirm('Weet je zeker dat je terug wil naar de standaard foto\'s?')) return;
-  photos.length = 0;
-  defaultPhotos.forEach(p => photos.push(p));
-  hasUnsavedChanges = true;
-  updateSaveBtn();
-  renderPhotoGrid();
+  try {
+    await fbDeleteDoc(fbDoc(fbDb, 'photos', photoId));
+    loadPhotosForFolder(currentFolder);
+  } catch(e) {
+    alert('Fout bij verwijderen: ' + e.message);
+  }
 }
 
 // Preview a photo on all templates at once
@@ -1203,46 +1385,33 @@ function shuffleAll() {
   });
 }
 
-// Save with confirmation
-function saveAndConfirm() {
-  savePhotos();
-  hasUnsavedChanges = false;
-  const btn = document.getElementById('saveBtn');
-  btn.classList.add('saved');
-  btn.textContent = '✅ Opgeslagen!';
-  setTimeout(() => {
-    btn.classList.remove('saved');
-    btn.textContent = '💾 Opslaan';
-  }, 1500);
-}
-
-function updateSaveBtn() {
-  const btn = document.getElementById('saveBtn');
-  if (hasUnsavedChanges) {
-    btn.style.background = '#ef4444';
-    btn.textContent = '💾 Opslaan*';
-  }
-}
-
 // Upload photos via manager panel (supports multiple)
-document.getElementById('managerUpload').addEventListener('change', function(e) {
+document.getElementById('managerUpload').addEventListener('change', async function(e) {
   const files = Array.from(e.target.files);
-  let loaded = 0;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      photos.push(ev.target.result);
-      loaded++;
-      if (loaded === files.length) {
-        hasUnsavedChanges = true;
-        updateSaveBtn();
-        renderPhotoGrid();
-      }
-    };
-    reader.readAsDataURL(file);
-  });
+  if (!files.length) return;
+  setStatus(`${files.length} foto('s) uploaden...`);
+  for (const file of files) {
+    const compressed = await compressImage(file);
+    await fbAddDoc(fbCollection(fbDb, 'photos'), {
+      data: compressed,
+      folder: currentFolder,
+      name: file.name,
+      createdAt: Date.now()
+    });
+  }
+  setStatus('');
+  loadPhotosForFolder(currentFolder);
   e.target.value = '';
 });
+
+// Init: wait for Firebase
+function initPhotoManager() {
+  fbReady = true;
+  document.getElementById('photoBadge').textContent = photos.length;
+}
+
+if (window.firebaseReady) initPhotoManager();
+else window.addEventListener('firebase-ready', initPhotoManager);
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
@@ -1307,16 +1476,27 @@ function usePhoto(mode) {
   if (bgEl) bgEl.style.backgroundImage = `url('${uploadedDataUrl}')`;
 
   // Add to photo pool if requested
-  if (mode === 'add') {
-    photos.push(uploadedDataUrl);
-    hasUnsavedChanges = true;
-    updateSaveBtn();
-    // Show confirmation
-    document.getElementById('btnAdd').textContent = '✅ Toegevoegd aan selectie!';
-    setTimeout(() => {
-      document.getElementById('btnAdd').textContent = 'Toevoegen aan selectie';
-      closeUpload();
-    }, 800);
+  if (mode === 'add' && fbReady) {
+    // Compress and save to Firebase
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = document.createElement('canvas');
+      const maxW = 600;
+      const scale = Math.min(1, maxW / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.5);
+      await fbAddDoc(fbCollection(fbDb, 'photos'), {
+        data: compressed, folder: currentFolder, name: 'upload', createdAt: Date.now()
+      });
+      document.getElementById('btnAdd').textContent = '✅ Toegevoegd!';
+      setTimeout(() => {
+        document.getElementById('btnAdd').textContent = 'Toevoegen aan selectie';
+        closeUpload();
+      }, 800);
+    };
+    img.src = uploadedDataUrl;
   } else {
     closeUpload();
   }
