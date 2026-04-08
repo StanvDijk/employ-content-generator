@@ -1551,12 +1551,17 @@ async function importVacature() {
       }
     }
 
-    // Trim description to first 1-2 sentences (max ~120 chars)
+    // Trim description: first sentence + keep adding short follow-up sentences
     if (desc) {
       const sentences = desc.match(/[^.!?]+[.!?]+/g) || [desc];
       let short = sentences[0].trim();
-      if (sentences[1] && (short + sentences[1]).length < 120) {
-        short += sentences[1];
+      for (let i = 1; i < sentences.length; i++) {
+        const next = sentences[i].trim();
+        // Keep adding if total stays under 150 chars OR next sentence is short (closing line like "Dan zoeken wij jou!")
+        if ((short + ' ' + next).length < 150 || next.length < 30) {
+          short += ' ' + next;
+        } else break;
+        if (short.length > 160) break;
       }
       desc = short.trim();
     }
