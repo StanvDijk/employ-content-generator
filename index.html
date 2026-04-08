@@ -844,6 +844,14 @@
   <div class="workspace-card">
     <h3>✏️ Vacature aanpassen</h3>
     <p class="sub">Alle templates worden live bijgewerkt</p>
+    <div class="url-import" style="margin-bottom:16px;">
+      <label style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#999; margin-bottom:6px; display:block;">Importeer van employwerkt.nl</label>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="inp-url" placeholder="https://www.employwerkt.nl/vacatures/..." style="flex:1; padding:11px 14px; border:1.5px solid #e8e8e8; border-radius:10px; font-family:inherit; font-size:14px; font-weight:500; background:#fafafa;">
+        <button id="btn-import" onclick="importVacature()" style="padding:10px 20px; border:none; border-radius:10px; background:var(--orange); color:white; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:background 0.15s;">⚡ Importeer</button>
+      </div>
+      <p id="import-status" style="font-size:11px; color:#999; margin-top:6px; display:none;"></p>
+    </div>
     <div class="edit-grid">
       <div class="field full">
         <label>Functietitel</label>
@@ -1459,6 +1467,111 @@ Object.keys(fields).forEach(id => {
     fields[id](this.value);
   });
 });
+
+// ======== URL IMPORT ========
+async function importVacature() {
+  const url = document.getElementById('inp-url').value.trim();
+  const status = document.getElementById('import-status');
+  const btn = document.getElementById('btn-import');
+
+  if (!url) { showStatus('Voer een URL in', '#e74c3c'); return; }
+  if (!url.includes('employwerkt.nl/vacatures/')) {
+    showStatus('Voer een geldige employwerkt.nl vacature-URL in', '#e74c3c'); return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Laden...';
+  showStatus('Vacature ophalen...', '#999');
+
+  try {
+    // Try multiple CORS proxies as fallback
+    const proxies = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+    ];
+    let html = null;
+    for (const proxy of proxies) {
+      try {
+        const res = await fetch(proxy + encodeURIComponent(url));
+        if (res.ok) { html = await res.text(); break; }
+      } catch(e) { continue; }
+    }
+
+    if (!html) throw new Error('Kon de pagina niet ophalen');
+
+    // Parse HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const text = doc.body.innerText;
+
+    // Extract title from h1
+    const h1 = doc.querySelector('h1');
+    const title = h1 ? h1.textContent.trim() : '';
+
+    // Extract fields from text patterns
+    const locMatch = text.match(/Locatie:\s*(.+?)(?:\n|$)/);
+    const hrsMatch = text.match(/Aantal uur:\s*(.+?)(?:\n|$)/);
+    const salMatch = text.match(/Salaris\(?indicatie?\)?:\s*(.+?)(?:\n|$)/);
+
+    // Parse salary — extract number and "Vanaf" prefix
+    let salValue = '';
+    let hasVanaf = false;
+    if (salMatch) {
+      const salText = salMatch[1].trim();
+      hasVanaf = salText.toLowerCase().includes('vanaf');
+      // Extract euro amount: "Vanaf € 16 / u" → "€16"
+      const euroMatch = salText.match(/€\s*([\d,.]+)/);
+      if (euroMatch) salValue = '€' + euroMatch[1].replace('.', ',');
+    }
+
+    // Extract description — first paragraph-like text after intro
+    let desc = '';
+    // Look for the intro/pitch text (usually starts with a question or statement)
+    const paragraphs = doc.querySelectorAll('p');
+    for (const p of paragraphs) {
+      const t = p.textContent.trim();
+      // Skip short texts, navigation, form labels etc.
+      if (t.length > 40 && t.length < 300 && !t.includes('©') && !t.includes('cookie')) {
+        desc = t;
+        break;
+      }
+    }
+
+    // Fill in fields
+    if (title) setField('inp-title', title);
+    if (salValue) setField('inp-sal', salValue);
+    if (locMatch) setField('inp-loc', locMatch[1].trim());
+    if (hrsMatch) setField('inp-hrs', hrsMatch[1].trim());
+    if (desc) setField('inp-desc', desc);
+
+    // Set Vanaf checkbox
+    document.getElementById('inp-vanaf').checked = hasVanaf;
+    fields['inp-sal'](document.getElementById('inp-sal').value);
+
+    const filled = [title && 'titel', salValue && 'salaris', locMatch && 'locatie', hrsMatch && 'uren', desc && 'beschrijving'].filter(Boolean);
+    showStatus('✓ Ingevuld: ' + filled.join(', '), '#27ae60');
+
+  } catch(e) {
+    showStatus('Fout: ' + e.message, '#e74c3c');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Importeer';
+  }
+}
+
+function setField(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = value;
+  if (fields[id]) fields[id](value);
+}
+
+function showStatus(msg, color) {
+  const status = document.getElementById('import-status');
+  status.textContent = msg;
+  status.style.color = color;
+  status.style.display = 'block';
+}
 </script>
 
 </body>
