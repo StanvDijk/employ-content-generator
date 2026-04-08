@@ -1551,6 +1551,16 @@ async function importVacature() {
       }
     }
 
+    // Trim description to first 1-2 sentences (max ~120 chars)
+    if (desc) {
+      const sentences = desc.match(/[^.!?]+[.!?]+/g) || [desc];
+      let short = sentences[0].trim();
+      if (sentences[1] && (short + sentences[1]).length < 120) {
+        short += sentences[1];
+      }
+      desc = short.trim();
+    }
+
     // Fill in fields
     if (title) setField('inp-title', title);
     if (salValue) setField('inp-sal', salValue);
