@@ -575,6 +575,7 @@
             <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="locatie"><span style="font-size:11px;">📍</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-loc-1">Hoogeveen</span></div>
             <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="uren"><span style="font-size:11px;">⏰</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-hrs-1">32-40 uur</span></div>
             <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="salaris-info"><span style="font-size:11px;">💶</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-sal-info-1">Vanaf €17 p/u</span></div>
+            <div style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:6px;" data-field="startdatum"><span style="font-size:11px;">📅</span><span style="font-size:11px; color:rgba(255,255,255,0.75); font-weight:500;" id="v-start-1">Per 1 juli</span></div>
           </div>
         </div>
         <div class="bot">
@@ -603,6 +604,7 @@
       <button class="vis-toggle on" onclick="toggleVis('tpl1','uren',this)"><span class="dot"></span>Uren</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','salaris-info',this)"><span class="dot"></span>Salaris (info)</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl1','salaris-groot',this)"><span class="dot"></span>Salaris (groot)</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl1','startdatum',this)"><span class="dot"></span>Startdatum</button>
     </div>
   </div>
 
@@ -628,6 +630,7 @@
             <div class="info-pill" data-field="locatie">📍 <span id="v-loc-2a">Hoogeveen</span></div>
             <div class="info-pill" data-field="uren">⏰ <span id="v-hrs-2a">32-40 uur</span></div>
             <div class="info-pill" data-field="salaris-info">💶 <span id="v-sal-info-2a">Vanaf €17 p/u</span></div>
+            <div class="info-pill" data-field="startdatum">📅 <span id="v-start-2a">Per 1 juli</span></div>
           </div>
         </div>
         <div class="bot-row">
@@ -656,6 +659,7 @@
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','uren',this)"><span class="dot"></span>Uren</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','salaris-info',this)"><span class="dot"></span>Salaris (info)</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl2a','salaris-groot',this)"><span class="dot"></span>Salaris (groot)</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl2a','startdatum',this)"><span class="dot"></span>Startdatum</button>
     </div>
   </div>
 
@@ -682,6 +686,7 @@
             <div class="chip" data-field="locatie">📍 <span id="v-loc-3">Hoogeveen</span></div>
             <div class="chip" data-field="uren">⏰ <span id="v-hrs-3">32-40 uur</span></div>
             <div class="chip" data-field="salaris-info">💶 <span id="v-sal-chip-3">Vanaf €17 p/u</span></div>
+            <div class="chip" data-field="startdatum">📅 <span id="v-start-3">Per 1 juli</span></div>
           </div>
         </div>
         <div class="bottom" style="margin-top: 12px;">
@@ -710,6 +715,7 @@
       <button class="vis-toggle on" onclick="toggleVis('tpl3','uren',this)"><span class="dot"></span>Uren</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','salaris-info',this)"><span class="dot"></span>Salaris (info)</button>
       <button class="vis-toggle on" onclick="toggleVis('tpl3','salaris-groot',this)"><span class="dot"></span>Salaris (groot)</button>
+      <button class="vis-toggle on" onclick="toggleVis('tpl3','startdatum',this)"><span class="dot"></span>Startdatum</button>
     </div>
   </div>
 
@@ -1420,8 +1426,10 @@ const fields = {
     });
   },
   'inp-start': (v) => {
-    const el = document.getElementById('v-start-3');
-    if (el && !isLocked('v-start-3')) el.textContent = v;
+    ['v-start-1','v-start-2a','v-start-3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !isLocked(id)) el.textContent = v;
+    });
   },
   'inp-desc': (v) => {
     ['v-desc-1','v-desc-2a','v-desc-3'].forEach(id => {
