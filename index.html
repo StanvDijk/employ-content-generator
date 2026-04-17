@@ -614,7 +614,7 @@
   <div class="template-wrap">
     <div class="template-label">Bold Modern</div>
     <div class="t1" id="tpl1">
-      <div class="bg" id="bg1" style="background-image: url('assets/team-foto.jpg')"></div>
+      <div class="bg" id="bg1" style="background-image: url('assets/employ-09.jpg')"></div>
       <div class="grad"></div>
       <div class="inner">
         <div class="top">
@@ -671,7 +671,7 @@
   <div class="template-wrap">
     <div class="template-label">Cinematic</div>
     <div class="t2a" id="tpl2a">
-      <div class="bg" id="bg2a" style="background-image: url('assets/foto-3.jpg')"></div>
+      <div class="bg" id="bg2a" style="background-image: url('assets/employ-05.jpg')"></div>
       <div class="grad"></div>
       <div class="inner">
         <div class="top">
@@ -726,7 +726,7 @@
   <div class="template-wrap">
     <div class="template-label">Glassmorphism</div>
     <div class="t3" id="tpl3" style="isolation: isolate">
-      <div class="bg" id="bg3" style="background-image: url('assets/team-foto-2.jpg')"></div>
+      <div class="bg" id="bg3" style="background-image: url('assets/employ-06.jpg')"></div>
       <div class="grad"></div>
       <div class="inner">
         <div class="top">
@@ -1035,11 +1035,12 @@ function downloadTemplate(elementId, name) {
   });
 
   html2canvas(el, {
-    scale: 2.5,
+    scale: 3.5,
     useCORS: true,
     allowTaint: true,
     backgroundColor: null,
     logging: false,
+    imageTimeout: 0,
   }).then(canvas => {
     const link = document.createElement('a');
     link.download = `employ-vacature-${name}.png`;
@@ -1077,7 +1078,7 @@ function toggleVis(tplId, field, btn) {
 document.querySelectorAll('.t1, .t2a, .t3').forEach(el => {
   el.addEventListener('click', function(e) {
     if (e.target.closest('button') || e.target.closest('input')) return;
-    html2canvas(this, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: null, logging: false })
+    html2canvas(this, { scale: 4, useCORS: true, allowTaint: true, backgroundColor: null, logging: false, imageTimeout: 0 })
       .then(canvas => {
         document.getElementById('fullscreenImg').src = canvas.toDataURL('image/png');
         document.getElementById('fullscreenOverlay').classList.add('show');
@@ -1102,7 +1103,7 @@ async function downloadAll() {
   for (const t of templates) {
     const el = document.getElementById(t.id);
     try {
-      const canvas = await html2canvas(el, { scale: 2.5, useCORS: true, allowTaint: true, backgroundColor: null, logging: false });
+      const canvas = await html2canvas(el, { scale: 3.5, useCORS: true, allowTaint: true, backgroundColor: null, logging: false, imageTimeout: 0 });
       const link = document.createElement('a');
       link.download = `employ-${t.name}.png`;
       link.href = canvas.toDataURL('image/png', 0.95);
@@ -1595,17 +1596,18 @@ function toggleBW(templateId, btn) {
 
 // Employ website photos pool
 const defaultPhotos = [
-  'assets/team-foto.jpg',
-  'assets/team-foto-2.jpg',
-  'assets/foto-1.jpg',
-  'assets/foto-2.jpg',
-  'assets/foto-3.jpg',
-  'assets/foto-6.jpg',
-  'assets/foto-7.jpg',
-  'assets/foto-8.jpg',
-  'assets/vacature-yanou.jpg',
-  'assets/vacature-bouw.jpg',
-  'assets/vacature-schilder.jpg',
+  'assets/employ-01.jpg',
+  'assets/employ-02.jpg',
+  'assets/employ-03.jpg',
+  'assets/employ-04.jpg',
+  'assets/employ-05.jpg',
+  'assets/employ-06.jpg',
+  'assets/employ-07.jpg',
+  'assets/employ-08.jpg',
+  'assets/employ-09.jpg',
+  'assets/employ-10.jpg',
+  'assets/employ-11.jpg',
+  'assets/employ-12.jpg',
 ];
 
 // Load from localStorage or use defaults
