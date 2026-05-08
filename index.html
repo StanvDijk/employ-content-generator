@@ -1208,13 +1208,18 @@ let folders = [];
 let fbPhotos = []; // { id, data, folder }
 let hiddenDefaults = []; // default photo paths hidden by user
 let fbReady = false;
+let fbOffline = false; // true when Firebase is unavailable
+let localUploadedPhotos = JSON.parse(localStorage.getItem('employ-local-photos') || '[]');
+
+function saveLocalPhotos() {
+  localStorage.setItem('employ-local-photos', JSON.stringify(localUploadedPhotos));
+}
 
 function toggleManager() {
   const panel = document.getElementById('managerPanel');
   panel.classList.toggle('show');
   if (panel.classList.contains('show')) {
-    if (fbReady) loadFolders();
-    else setStatus('Firebase laden...');
+    loadFolders();
   }
 }
 
@@ -1285,7 +1290,12 @@ async function loadFolders() {
     renderFolderTabs();
     loadPhotosForFolder(currentFolder);
   } catch(e) {
-    setStatus('Fout bij laden: ' + e.message);
+    fbOffline = true;
+    folders = [{ id: 'local-0', name: 'Algemeen' }];
+    hiddenDefaults = [];
+    renderFolderTabs();
+    loadPhotosForFolder(currentFolder);
+    setStatus('Offline modus — foto\'s worden lokaal opgeslagen');
   }
 }
 
@@ -1350,9 +1360,24 @@ document.getElementById('folderTabs').addEventListener('click', async function(e
       input.remove();
       target.style.display = '';
       if (name && !folders.find(f => f.name === name)) {
-        await fbAddDoc(fbCollection(fbDb, 'folders'), { name, createdAt: Date.now() });
-        currentFolder = name;
-        loadFolders();
+        if (fbOffline) {
+          folders.push({ id: 'local-folder-' + Date.now(), name });
+          currentFolder = name;
+          renderFolderTabs();
+          loadPhotosForFolder(currentFolder);
+        } else {
+          try {
+            await fbAddDoc(fbCollection(fbDb, 'folders'), { name, createdAt: Date.now() });
+            currentFolder = name;
+            loadFolders();
+          } catch(err) {
+            fbOffline = true;
+            folders.push({ id: 'local-folder-' + Date.now(), name });
+            currentFolder = name;
+            renderFolderTabs();
+            loadPhotosForFolder(currentFolder);
+          }
+        }
       }
     };
     input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') create(); if (ev.key === 'Escape') { input.remove(); target.style.display = ''; } });
@@ -1371,14 +1396,22 @@ document.getElementById('folderTabs').addEventListener('click', async function(e
 
 async function loadPhotosForFolder(folder) {
   setStatus('Foto\'s laden...');
+  if (fbOffline) {
+    fbPhotos = localUploadedPhotos.filter(p => p.folder === folder);
+    renderPhotoGrid();
+    setStatus('Offline modus');
+    return;
+  }
   try {
     const snap = await fbGetDocs(fbCollection(fbDb, 'photos'));
     fbPhotos = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => p.folder === folder);
-    // Also include default assets for 'Algemeen' if no firebase photos yet
     renderPhotoGrid();
     setStatus('');
   } catch(e) {
-    setStatus('Fout: ' + e.message);
+    fbOffline = true;
+    fbPhotos = localUploadedPhotos.filter(p => p.folder === folder);
+    renderPhotoGrid();
+    setStatus('Offline modus');
   }
 }
 
@@ -1422,10 +1455,17 @@ document.getElementById('photoGrid').addEventListener('click', async function(e)
 
   // Delete firebase photo
   if (target.dataset.action === 'delete-photo') {
-    try {
-      await fbDeleteDoc(fbDoc(fbDb, 'photos', target.dataset.photoId));
+    const photoId = target.dataset.photoId;
+    if (fbOffline || photoId.startsWith('local-')) {
+      localUploadedPhotos = localUploadedPhotos.filter(p => p.id !== photoId);
+      saveLocalPhotos();
       loadPhotosForFolder(currentFolder);
-    } catch(err) { alert('Fout: ' + err.message); }
+    } else {
+      try {
+        await fbDeleteDoc(fbDoc(fbDb, 'photos', photoId));
+        loadPhotosForFolder(currentFolder);
+      } catch(err) { alert('Fout: ' + err.message); }
+    }
     return;
   }
 
@@ -1471,14 +1511,21 @@ document.getElementById('managerUpload').addEventListener('change', async functi
   setStatus(`${files.length} foto('s) uploaden...`);
   for (const file of files) {
     const compressed = await compressImage(file);
-    await fbAddDoc(fbCollection(fbDb, 'photos'), {
-      data: compressed,
-      folder: currentFolder,
-      name: file.name,
-      createdAt: Date.now()
-    });
+    if (fbOffline) {
+      localUploadedPhotos.push({ id: 'local-' + Date.now() + '-' + Math.random(), data: compressed, folder: currentFolder, name: file.name });
+      saveLocalPhotos();
+    } else {
+      try {
+        await fbAddDoc(fbCollection(fbDb, 'photos'), { data: compressed, folder: currentFolder, name: file.name, createdAt: Date.now() });
+      } catch(err) {
+        fbOffline = true;
+        localUploadedPhotos.push({ id: 'local-' + Date.now(), data: compressed, folder: currentFolder, name: file.name });
+        saveLocalPhotos();
+        setStatus('Offline modus — foto lokaal opgeslagen');
+      }
+    }
   }
-  setStatus('');
+  if (!fbOffline) setStatus('');
   loadPhotosForFolder(currentFolder);
   e.target.value = '';
 });
