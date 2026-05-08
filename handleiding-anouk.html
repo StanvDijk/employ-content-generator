@@ -423,6 +423,73 @@
     </div>
   </div>
 
+  <!-- 2l -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2l</div>
+      </div>
+      <div>
+        <div class="card-titel">JobPosting schema toevoegen — vacatures in Google Jobs</div>
+        <div class="card-tijd">⏱ 10 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Code Snippets (WPCode)</span> → <span class="highlight">Nieuw snippet toevoegen</span></li>
+      <li><span class="stap-nr">2</span> Kies <span class="highlight">PHP snippet</span> (niet HTML)</li>
+      <li><span class="stap-nr">3</span> Naam: <span class="highlight">"JobPosting schema vacatures"</span></li>
+      <li><span class="stap-nr">4</span> Plak de code hieronder in het codeveld</li>
+      <li><span class="stap-nr">5</span> Zet de schakelaar op <span class="highlight">Actief</span> en sla op</li>
+      <li><span class="stap-nr">6</span> Test via <span class="highlight">search.google.com/test/rich-results</span> → plak een vacature-URL → je ziet "JobPosting" groen</li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-2l', this)">Kopieer code</button>
+    <div class="code-blok" id="code-2l">add_action('wp_head', function() {
+    if (!is_singular()) return;
+    $post = get_post();
+    if (!$post || $post-&gt;post_type !== 'vacancies') return;
+
+    $title       = get_the_title($post);
+    $description = wp_strip_all_tags(get_the_content(null, false, $post));
+    $description = mb_substr($description, 0, 500);
+    $location    = get_post_meta($post-&gt;ID, 'stad', true)
+                ?: get_post_meta($post-&gt;ID, 'location', true)
+                ?: 'Hoogeveen';
+
+    $schema = [
+        '@context'       =&gt; 'https://schema.org',
+        '@type'          =&gt; 'JobPosting',
+        'title'          =&gt; $title,
+        'description'    =&gt; $description,
+        'datePosted'     =&gt; get_the_date('Y-m-d', $post),
+        'validThrough'   =&gt; date('Y-m-d', strtotime('+60 days')),
+        'employmentType' =&gt; 'FULL_TIME',
+        'hiringOrganization' =&gt; [
+            '@type'  =&gt; 'Organization',
+            'name'   =&gt; 'Employ Werkt',
+            'sameAs' =&gt; 'https://www.employwerkt.nl',
+        ],
+        'jobLocation' =&gt; [
+            '@type'   =&gt; 'Place',
+            'address' =&gt; [
+                '@type'           =&gt; 'PostalAddress',
+                'addressLocality' =&gt; $location,
+                'addressRegion'   =&gt; 'Drenthe',
+                'addressCountry'  =&gt; 'NL',
+            ],
+        ],
+    ];
+
+    echo '&lt;script type="application/ld+json"&gt;'
+        . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
+        . '&lt;/script&gt;' . "\n";
+});</div>
+    <div class="tip">💡 <strong>Waarom?</strong> Google heeft een aparte "Jobs" carrousel bovenaan zoekresultaten. Dit stukje code vertelt Google dat een pagina een vacature is — inclusief functietitel, locatie en plaatsingsdatum. Vacatures verschijnen dan gratis in die carrousel.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2l">
+      <label for="check-2l">Klaar!</label>
+    </div>
+  </div>
+
   <!-- 3b -->
   <div class="card">
     <div class="card-header">
