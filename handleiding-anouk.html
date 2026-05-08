@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actielijst employwerkt.nl — Anouk</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      padding: 32px 20px 60px;
+    }
+    .wrap { max-width: 780px; margin: 0 auto; }
+
+    .header {
+      background: #EE7203;
+      color: white;
+      border-radius: 16px;
+      padding: 32px 28px;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+    .header p { font-size: 15px; opacity: 0.85; }
+
+    .blok-titel {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #888;
+      margin: 36px 0 12px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px 26px;
+      margin-bottom: 14px;
+      border: 1.5px solid #ebebeb;
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .nummer {
+      background: #EE7203;
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 6px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .card-titel { font-size: 17px; font-weight: 800; }
+    .card-tijd { font-size: 12px; color: #aaa; font-weight: 600; margin-top: 2px; }
+
+    .stappen { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .stappen li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .stap-nr {
+      background: #f0f0f0;
+      color: #555;
+      font-size: 11px;
+      font-weight: 800;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .tip {
+      background: #fff8f2;
+      border-left: 3px solid #EE7203;
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #555;
+      margin-top: 14px;
+    }
+
+    .code-blok {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 14px;
+      white-space: pre;
+    }
+
+    .kopieer-knop {
+      display: inline-block;
+      background: #EE7203;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .kopieer-knop:hover { background: #d4640a; }
+    .kopieer-knop.gekopieerd { background: #22c55e; }
+
+    .badge-klaar {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      margin-top: 4px;
+    }
+
+    .afvinken {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .afvinken input[type=checkbox] {
+      width: 18px;
+      height: 18px;
+      accent-color: #EE7203;
+      cursor: pointer;
+    }
+    .afvinken label { font-size: 13px; color: #888; cursor: pointer; }
+
+    .highlight { color: #EE7203; font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>Actielijst employwerkt.nl</h1>
+    <p>Stap-voor-stap handleiding — alles wat je vandaag kunt doen in WordPress</p>
+  </div>
+
+  <!-- BLOK A -->
+  <div class="blok-titel">Blok A — Zelf aanpassen in WordPress</div>
+
+  <!-- 2a -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2a</div>
+      </div>
+      <div>
+        <div class="card-titel">Homepage title aanpassen</div>
+        <div class="card-tijd">⏱ 5 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga in WordPress naar het linkermenu → klik op <span class="highlight">SEO</span> (oranje icoontje van Yoast)</li>
+      <li><span class="stap-nr">2</span> Klik op <span class="highlight">Instellingen</span></li>
+      <li><span class="stap-nr">3</span> Klik op <span class="highlight">Zoekresultaten</span></li>
+      <li><span class="stap-nr">4</span> Klik bovenaan op het tabje <span class="highlight">Titels &amp; meta</span></li>
+      <li><span class="stap-nr">5</span> Klik op <span class="highlight">Voorpagina</span></li>
+      <li><span class="stap-nr">6</span> Pas de title aan naar: <span class="highlight">Uitzendbureau Hoogeveen &amp; regio | Employ Werkt</span></li>
+      <li><span class="stap-nr">7</span> Klik op <span class="highlight">Opslaan</span></li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> Google wist niet dat jullie in Hoogeveen zitten. Nu wel.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2a">
+      <label for="check-2a">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 2b -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2b</div>
+      </div>
+      <div>
+        <div class="card-titel">Hero-sectie op de homepage verbeteren</div>
+        <div class="card-tijd">⏱ 20–30 minuten</div>
+      </div>
+    </div>
+    <p style="font-size:14px; color:#555; margin-bottom:16px;">
+      De homepage zegt nu "Waar wil jij werken?" en toont drie bedrijfsnamen. Een bezoeker begrijpt niet wat hij moet kiezen en haakt af. Vervang het door een duidelijke boodschap.
+    </p>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Pagina's</span> → open de <span class="highlight">Homepage</span></li>
+      <li><span class="stap-nr">2</span> Zoek de grote hero-sectie bovenaan (het grote blok met de koptekst)</li>
+      <li><span class="stap-nr">3</span> Verander de koptekst naar: <span class="highlight">Vind werk. Vandaag.</span></li>
+      <li><span class="stap-nr">4</span> Verander de subtekst naar: <span class="highlight">100+ vacatures in Drenthe en regio. Schrijf je in — wij regelen de rest.</span></li>
+      <li><span class="stap-nr">5</span> Eerste knop: <span class="highlight">Bekijk vacatures</span> → link naar <span class="highlight">/vacatures/</span></li>
+      <li><span class="stap-nr">6</span> Tweede knop: <span class="highlight">Stuur je CV →</span> → link naar <span class="highlight">/inschrijven/</span></li>
+      <li><span class="stap-nr">7</span> Klik op <span class="highlight">Bijwerken</span></li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> De eerste vraag die elke bezoeker stelt: "Kan ik hier een baan vinden?" Die vraag moet binnen 2 seconden beantwoord zijn. "Vind werk. Vandaag." doet dat.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2b">
+      <label for="check-2b">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 3d -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">3d</div>
+      </div>
+      <div>
+        <div class="card-titel">Social proof toevoegen bij inschrijfformulier</div>
+        <div class="card-tijd">⏱ 5 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Pagina's</span> → open de <span class="highlight">Inschrijven</span> pagina</li>
+      <li><span class="stap-nr">2</span> Zoek het inschrijfformulier op de pagina</li>
+      <li><span class="stap-nr">3</span> Voeg boven de verzendknop deze tekst toe:</li>
+    </ul>
+    <div class="code-blok">Al 200+ mensen gingen je voor — schrijf je in en wij bellen je binnen 1 werkdag.</div>
+    <div class="tip">💡 <strong>Waarom?</strong> Mensen twijfelen vlak voor het insturen. Dit geeft vertrouwen.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-3d">
+      <label for="check-3d">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 2i -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2i</div>
+      </div>
+      <div>
+        <div class="card-titel">Inschrijfformulier verkorten</div>
+        <div class="card-tijd">⏱ 15–30 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar de <span class="highlight">Inschrijven</span> pagina in WordPress</li>
+      <li><span class="stap-nr">2</span> Open het formulier in de formulierenbuilder (Gravity Forms, Contact Form 7, of het thema)</li>
+      <li><span class="stap-nr">3</span> Verwijder de velden: <span class="highlight">Postcode, Straat, Woonplaats</span></li>
+      <li><span class="stap-nr">4</span> Houd over: <span class="highlight">Voornaam + Achternaam, Telefoonnummer, CV uploaden</span></li>
+      <li><span class="stap-nr">5</span> Opslaan</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> Mensen op mobiel haken af bij lange formulieren. Minder velden = meer inschrijvingen.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2i">
+      <label for="check-2i">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 2r -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2r</div>
+      </div>
+      <div>
+        <div class="card-titel">Bedankpagina na sollicitatie verbeteren</div>
+        <div class="card-tijd">⏱ 15 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Pagina's</span> → zoek de pagina <span class="highlight">"Bedankt voor je sollicitatie"</span> (URL: /solliciteren-bedankt-voor-je-sollicitatie/)</li>
+      <li><span class="stap-nr">2</span> Verwijder de huidige inhoud</li>
+      <li><span class="stap-nr">3</span> Voeg een <span class="highlight">HTML-blok</span> toe en plak de code hieronder erin</li>
+      <li><span class="stap-nr">4</span> Klik op <span class="highlight">Bijwerken</span></li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-2r', this)">Kopieer code</button>
+    <div class="code-blok" id="code-2r">&lt;section style="max-width:600px; margin:60px auto; text-align:center; padding:0 20px;"&gt;
+  &lt;div style="font-size:56px; margin-bottom:16px;"&gt;🎉&lt;/div&gt;
+  &lt;h1 style="font-size:28px; font-weight:900; color:#1a1a1a; margin-bottom:12px;"&gt;
+    Top! Je CV is ontvangen.
+  &lt;/h1&gt;
+  &lt;p style="font-size:16px; color:#555; margin-bottom:36px;"&gt;
+    Een intercedent neemt binnen &lt;strong&gt;1 werkdag&lt;/strong&gt; contact met je op.
+  &lt;/p&gt;
+  &lt;div style="display:flex; flex-direction:column; gap:12px; text-align:left; margin-bottom:36px;"&gt;
+    &lt;div style="display:flex; align-items:center; gap:16px; background:#f9f9f9; padding:16px; border-radius:12px;"&gt;
+      &lt;span style="font-size:24px;"&gt;✅&lt;/span&gt;
+      &lt;div&gt;&lt;strong&gt;Stap 1 — CV ontvangen&lt;/strong&gt;&lt;br&gt;
+      &lt;span style="color:#777; font-size:14px;"&gt;We hebben je sollicitatie goed ontvangen.&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div style="display:flex; align-items:center; gap:16px; background:#f9f9f9; padding:16px; border-radius:12px;"&gt;
+      &lt;span style="font-size:24px;"&gt;📞&lt;/span&gt;
+      &lt;div&gt;&lt;strong&gt;Stap 2 — Wij bellen je&lt;/strong&gt;&lt;br&gt;
+      &lt;span style="color:#777; font-size:14px;"&gt;Binnen 1 werkdag neemt een intercedent contact op.&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div style="display:flex; align-items:center; gap:16px; background:#f9f9f9; padding:16px; border-radius:12px;"&gt;
+      &lt;span style="font-size:24px;"&gt;🤝&lt;/span&gt;
+      &lt;div&gt;&lt;strong&gt;Stap 3 — Kennismaking &amp;amp; aan de slag&lt;/strong&gt;&lt;br&gt;
+      &lt;span style="color:#777; font-size:14px;"&gt;We kijken samen wat het beste bij je past.&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;a href="/vacatures/" style="display:inline-block; background:#EE7203; color:white; padding:14px 32px; border-radius:10px; font-weight:700; font-size:15px; text-decoration:none;"&gt;
+    Bekijk ondertussen onze vacatures →
+  &lt;/a&gt;
+&lt;/section&gt;</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2r">
+      <label for="check-2r">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 2j -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2j</div>
+      </div>
+      <div>
+        <div class="card-titel">"Geen passende vacature?" sectie toevoegen</div>
+        <div class="card-tijd">⏱ 10 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Pagina's</span> → open de <span class="highlight">Vacatures</span> pagina</li>
+      <li><span class="stap-nr">2</span> Scroll naar het einde van de pagina-inhoud</li>
+      <li><span class="stap-nr">3</span> Voeg een <span class="highlight">HTML-blok</span> toe en plak de code hieronder erin</li>
+      <li><span class="stap-nr">4</span> Klik op <span class="highlight">Bijwerken</span></li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-2j', this)">Kopieer code</button>
+    <div class="code-blok" id="code-2j">&lt;section style="background:#fff8f2; border:2px solid #EE7203; border-radius:16px; padding:36px 28px; text-align:center; margin:48px 0;"&gt;
+  &lt;h3 style="font-size:20px; font-weight:800; color:#1a1a1a; margin-bottom:8px;"&gt;
+    Geen passende vacature gevonden?
+  &lt;/h3&gt;
+  &lt;p style="color:#555; font-size:15px; margin-bottom:24px;"&gt;
+    Stuur toch je CV in — we houden je op de hoogte zodra er iets past.
+  &lt;/p&gt;
+  &lt;a href="/inschrijven/" style="display:inline-block; background:#EE7203; color:white; padding:14px 32px; border-radius:10px; font-weight:700; font-size:15px; text-decoration:none;"&gt;
+    Stuur je CV →
+  &lt;/a&gt;
+&lt;/section&gt;</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2j">
+      <label for="check-2j">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 1a -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">1a</div>
+      </div>
+      <div>
+        <div class="card-titel">WP Rocket cache wissen na wijzigingen</div>
+        <div class="card-tijd">⏱ 1 minuut</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Klik rechtsboven in WordPress op het <span class="highlight">WP Rocket</span> icoontje (raket-icoontje in de adminbalk)</li>
+      <li><span class="stap-nr">2</span> Klik op <span class="highlight">Cache wissen</span></li>
+      <li><span class="stap-nr">3</span> Even wachten — klaar. De site toont nu voor iedereen de nieuwste versie</li>
+    </ul>
+    <div class="tip">💡 <strong>Wanneer doen?</strong> Elke keer na het aanpassen van een pagina, het toevoegen van een plugin of het wijzigen van tekst. WP Rocket slaat een "snapshot" op van de site om hem snel te laden — dat moet je vernieuwen na elke verandering. Anders zien bezoekers (en jijzelf op de desktop) nog de oude versie.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-1a">
+      <label for="check-1a">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- BLOK B -->
+  <div class="blok-titel">Blok B — Snippets plakken via WPCode</div>
+
+  <div class="card" style="border-color:#fde68a; background:#fffbeb;">
+    <p style="font-size:13px; color:#92400e;">
+      <strong>Wat is WPCode?</strong> Een WordPress plugin om stukjes code toe te voegen zonder de themabestanden aan te raken. Veel veiliger dan direct in de code zitten.
+      Staat die plugin er nog niet? Ga naar <strong>Plugins → Nieuwe plugin → zoek "WPCode"</strong> → installeren &amp; activeren.
+    </p>
+  </div>
+
+  <!-- 2k -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">2k</div>
+      </div>
+      <div>
+        <div class="card-titel">LocalBusiness schema toevoegen</div>
+        <div class="card-tijd">⏱ 10 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga in WordPress naar <span class="highlight">Code Snippets (WPCode)</span> in het linkermenu</li>
+      <li><span class="stap-nr">2</span> Klik op <span class="highlight">Nieuw snippet toevoegen</span></li>
+      <li><span class="stap-nr">3</span> Kies <span class="highlight">HTML snippet</span></li>
+      <li><span class="stap-nr">4</span> Geef het een naam, bijv: <span class="highlight">"LocalBusiness Schema"</span></li>
+      <li><span class="stap-nr">5</span> Plak de code hieronder in het codeveld</li>
+      <li><span class="stap-nr">6</span> Zet bij Locatie: <span class="highlight">Header</span> (voor &lt;/head&gt;)</li>
+      <li><span class="stap-nr">7</span> Zet de schakelaar op <span class="highlight">Actief</span> en sla op</li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-2k', this)">Kopieer code</button>
+    <div class="code-blok" id="code-2k">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "EmploymentAgency",
+  "name": "Employ Werkt",
+  "url": "https://www.employwerkt.nl",
+  "telephone": "+31880889009",
+  "email": "info@employwerkt.nl",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Industrieweg 1",
+    "postalCode": "7903 AH",
+    "addressLocality": "Hoogeveen",
+    "addressCountry": "NL"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+      "opens": "08:30",
+      "closes": "17:00"
+    }
+  ],
+  "areaServed": ["Drenthe","Groningen","Overijssel","Friesland","Gelderland"]
+}
+&lt;/script&gt;</div>
+    <div class="tip">💡 <strong>Waarom?</strong> Google begrijpt dan dat employwerkt.nl een fysiek uitzendbureau in Hoogeveen is. Helpt bij lokale zoekresultaten.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-2k">
+      <label for="check-2k">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 3b -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">3b</div>
+      </div>
+      <div>
+        <div class="card-titel">WhatsApp floating knop toevoegen</div>
+        <div class="card-tijd">⏱ 10 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga in WordPress naar <span class="highlight">Code Snippets (WPCode)</span></li>
+      <li><span class="stap-nr">2</span> Klik op <span class="highlight">Nieuw snippet toevoegen</span></li>
+      <li><span class="stap-nr">3</span> Kies <span class="highlight">HTML snippet</span></li>
+      <li><span class="stap-nr">4</span> Naam: <span class="highlight">"WhatsApp knop"</span></li>
+      <li><span class="stap-nr">5</span> Plak de code hieronder in het codeveld</li>
+      <li><span class="stap-nr">6</span> Zet bij Locatie: <span class="highlight">Footer</span></li>
+      <li><span class="stap-nr">7</span> Zet de schakelaar op <span class="highlight">Actief</span> en sla op</li>
+      <li><span class="stap-nr">8</span> Open de site in een nieuw tabblad — rechtsonder zie je de groene WhatsApp knop</li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-3b', this)">Kopieer code</button>
+    <div class="code-blok" id="code-3b">&lt;a href="https://wa.me/31880889009?text=Hoi%2C%20ik%20heb%20een%20vraag%20over%20werk%20bij%20Employ%20Werkt!"
+   target="_blank" rel="noopener"
+   style="position:fixed; bottom:24px; right:24px; width:56px; height:56px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(0,0,0,0.2); z-index:9999; text-decoration:none;"
+   title="App ons op WhatsApp"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white"&gt;
+    &lt;path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/&gt;
+  &lt;/svg&gt;
+&lt;/a&gt;</div>
+    <div class="tip">💡 <strong>Waarom?</strong> Op mobiel is appen de laagste drempel. De groene knop is altijd zichtbaar op elke pagina.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-3b">
+      <label for="check-3b">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- BLOK C -->
+  <div class="blok-titel">Blok C — Toevoegen aan bestaande pagina's</div>
+
+  <!-- 3i Stap 1: Homepage -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">3i-A</div>
+      </div>
+      <div>
+        <div class="card-titel">Swipe app op de homepage plaatsen</div>
+        <div class="card-tijd">⏱ 10 minuten</div>
+      </div>
+    </div>
+    <p style="font-size:14px; color:#555; margin-bottom:16px;">
+      De swipe-app staat al live — embed hem op de homepage zodat bezoekers meteen kunnen swipen.
+    </p>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Pagina's</span> → open de <span class="highlight">Homepage</span></li>
+      <li><span class="stap-nr">2</span> Kies een logische plek op de pagina (bijv. onder de hero of onder de vacaturelijst)</li>
+      <li><span class="stap-nr">3</span> Voeg een <span class="highlight">HTML-blok</span> toe en plak de code hieronder erin</li>
+      <li><span class="stap-nr">4</span> Klik op <span class="highlight">Bijwerken</span></li>
+      <li><span class="stap-nr">5</span> Open de homepage op je telefoon om te testen</li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-3i-a', this)">Kopieer code</button>
+    <div class="code-blok" id="code-3i-a">&lt;div id="swipe" style="padding:40px 20px; text-align:center;"&gt;
+  &lt;h2 style="font-size:22px; font-weight:900; color:#1a1a1a; margin-bottom:6px;"&gt;Swipe onze vacatures&lt;/h2&gt;
+  &lt;p style="color:#777; font-size:14px; margin-bottom:24px;"&gt;Swipe rechts op vacatures die je aanspreken — net als Tinder maar dan voor werk.&lt;/p&gt;
+  &lt;iframe
+    src="https://employ-swipe.pages.dev"
+    style="width:100%; max-width:480px; height:700px; border:none; border-radius:20px; display:block; margin:0 auto;"
+    title="Swipe vacatures"&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;</div>
+    <div class="tip">💡 <strong>Wat is dit?</strong> Bezoekers swipen door vacatures zoals op Tinder — rechts voor "interessant", links voor "niet voor mij". Werkt op mobiel en desktop.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-3i-a">
+      <label for="check-3i-a">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 3i Stap 2: CTA op vacaturespagina -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">3i-B</div>
+      </div>
+      <div>
+        <div class="card-titel">CTA "Swipe onze vacatures" bovenaan de vacaturespagina</div>
+        <div class="card-tijd">⏱ 5 minuten</div>
+      </div>
+    </div>
+    <p style="font-size:14px; color:#555; margin-bottom:16px;">
+      Zet bovenaan de vacaturespagina een knop die bezoekers naar de swipe-app op de homepage stuurt.
+    </p>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Pagina's</span> → open de <span class="highlight">Vacatures</span> pagina</li>
+      <li><span class="stap-nr">2</span> Voeg <span class="highlight">bovenaan</span> een HTML-blok toe</li>
+      <li><span class="stap-nr">3</span> Plak de code hieronder erin</li>
+      <li><span class="stap-nr">4</span> Klik op <span class="highlight">Bijwerken</span></li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-3i-b', this)">Kopieer code</button>
+    <div class="code-blok" id="code-3i-b">&lt;div style="background:#fff8f2; border:2px solid #EE7203; border-radius:14px; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:28px;"&gt;
+  &lt;div&gt;
+    &lt;div style="font-size:16px; font-weight:800; color:#1a1a1a;"&gt;Liever swipen? 👆&lt;/div&gt;
+    &lt;div style="font-size:13px; color:#777; margin-top:3px;"&gt;Swipe door onze vacatures zoals op Tinder — rechts is interessant, links is verder.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;a href="/#swipe" style="background:#EE7203; color:white; padding:12px 22px; border-radius:10px; font-weight:700; font-size:14px; text-decoration:none; white-space:nowrap;"&gt;
+    Swipe vacatures →
+  &lt;/a&gt;
+&lt;/div&gt;</div>
+    <div class="tip">💡 De knop linkt naar <strong>/#swipe</strong> — dat is de swipe-sectie op de homepage die je net hebt aangemaakt (stap 3i-A). Zorg dat je die eerst gedaan hebt.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-3i-b">
+      <label for="check-3i-b">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- BLOK D -->
+  <div class="blok-titel">Blok D — WordPress beveiliging (onzichtbaar maar belangrijk)</div>
+
+  <div class="card" style="border-color:#fde68a; background:#fffbeb;">
+    <p style="font-size:13px; color:#92400e;">
+      <strong>Waarom beveiliging?</strong> WordPress sites worden dagelijks aangevallen. De acties hieronder kosten in totaal ~1 uur en beschermen de site tegen de meest voorkomende aanvallen. Allemaal via gratis plugins — geen technische kennis nodig.
+    </p>
+  </div>
+
+  <!-- 4a -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4a</div>
+      </div>
+      <div>
+        <div class="card-titel">Inlogpagina beveiligen tegen aanvallen</div>
+        <div class="card-tijd">⏱ 10 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Plugins</span> → <span class="highlight">Nieuwe plugin</span></li>
+      <li><span class="stap-nr">2</span> Zoek: <span class="highlight">Limit Login Attempts Reloaded</span></li>
+      <li><span class="stap-nr">3</span> Klik op <span class="highlight">Nu installeren</span> → <span class="highlight">Activeren</span></li>
+      <li><span class="stap-nr">4</span> Standaardinstellingen zijn prima — je hoeft niks aan te passen</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> De inlogpagina (<code>/wp-login.php</code>) is bekend bij hackers — er worden dagelijks automatische aanmeldpogingen gedaan. Deze plugin blokkeert een IP-adres na een paar mislukte pogingen.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4a">
+      <label for="check-4a">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4b -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4b</div>
+      </div>
+      <div>
+        <div class="card-titel">XML-RPC uitschakelen</div>
+        <div class="card-tijd">⏱ 5 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Plugins</span> → <span class="highlight">Nieuwe plugin</span></li>
+      <li><span class="stap-nr">2</span> Zoek: <span class="highlight">Disable XML-RPC</span></li>
+      <li><span class="stap-nr">3</span> Installeer + activeer — klaar, geen verdere instellingen nodig</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> XML-RPC is een oud WordPress-protocol dat bijna niemand meer gebruikt maar wél populair is bij hackers. Uitzetten kost niks en maakt de site direct veiliger.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4b">
+      <label for="check-4b">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4c -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4c</div>
+      </div>
+      <div>
+        <div class="card-titel">WordPress versienummer verbergen</div>
+        <div class="card-tijd">⏱ 5 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Code Snippets (WPCode)</span> in het linkermenu</li>
+      <li><span class="stap-nr">2</span> Klik op <span class="highlight">Nieuw snippet toevoegen</span></li>
+      <li><span class="stap-nr">3</span> Kies <span class="highlight">PHP snippet</span></li>
+      <li><span class="stap-nr">4</span> Naam: <span class="highlight">"Versienummer verbergen"</span></li>
+      <li><span class="stap-nr">5</span> Plak de code hieronder in het codeveld</li>
+      <li><span class="stap-nr">6</span> Zet de schakelaar op <span class="highlight">Actief</span> en sla op</li>
+    </ul>
+    <button class="kopieer-knop" onclick="kopieer('code-4c', this)">Kopieer code</button>
+    <div class="code-blok" id="code-4c">remove_action('wp_head', 'wp_generator');</div>
+    <div class="tip">💡 <strong>Waarom?</strong> In de broncode van de site staat welke versie van WordPress jullie gebruiken. Hackers gebruiken dat om gerichte aanvallen te doen op bekende kwetsbaarheden van die versie. Dit verbergt die info.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4c">
+      <label for="check-4c">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4d -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4d</div>
+      </div>
+      <div>
+        <div class="card-titel">Twee-factor authenticatie instellen</div>
+        <div class="card-tijd">⏱ 15 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Plugins</span> → <span class="highlight">Nieuwe plugin</span></li>
+      <li><span class="stap-nr">2</span> Zoek: <span class="highlight">WP 2FA</span></li>
+      <li><span class="stap-nr">3</span> Installeer + activeer</li>
+      <li><span class="stap-nr">4</span> Volg de setup-wizard → kies: <span class="highlight">verplicht voor admins</span></li>
+      <li><span class="stap-nr">5</span> Scan de QR-code met <span class="highlight">Google Authenticator</span> of <span class="highlight">Authy</span> op je telefoon</li>
+      <li><span class="stap-nr">6</span> Voortaan: vul naast je wachtwoord ook de 6-cijferige code van je telefoon in</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> Als je wachtwoord ooit uitlekt, heeft een hacker alsnog niks — hij heeft ook je telefoon nodig. Dit is de sterkste beveiliging voor een admin-account.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4d">
+      <label for="check-4d">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4e -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4e</div>
+      </div>
+      <div>
+        <div class="card-titel">Plugins en WordPress up-to-date houden</div>
+        <div class="card-tijd">⏱ 10 minuten (maandelijks)</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Dashboard</span> → <span class="highlight">Updates</span></li>
+      <li><span class="stap-nr">2</span> Selecteer alles → klik <span class="highlight">Plugins bijwerken</span></li>
+      <li><span class="stap-nr">3</span> Werk ook WordPress zelf bij als er een update klaarstaat</li>
+      <li><span class="stap-nr">4</span> Doe dit minimaal <span class="highlight">1× per maand</span></li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> Verouderde plugins zijn de #1 oorzaak van gehackte WordPress sites. Elke update dicht bekende beveiligingsgaten. 10 minuten per maand houdt de site veilig.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4e">
+      <label for="check-4e">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4f -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4f</div>
+      </div>
+      <div>
+        <div class="card-titel">Ongebruikte plugins en thema's verwijderen</div>
+        <div class="card-tijd">⏱ 15 minuten (eenmalig)</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Plugins</span> → klik op de filter <span class="highlight">Inactief</span></li>
+      <li><span class="stap-nr">2</span> Verwijder alles wat je echt niet (meer) gebruikt</li>
+      <li><span class="stap-nr">3</span> Ga naar <span class="highlight">Uiterlijk</span> → <span class="highlight">Thema's</span> → verwijder niet-actieve thema's</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> Inactieve plugins zitten nog steeds op de server en kunnen kwetsbaarheden bevatten — ook al zijn ze uitgeschakeld. Weg ermee.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4f">
+      <label for="check-4f">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4g -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4g</div>
+      </div>
+      <div>
+        <div class="card-titel">SSL-certificaat vervaldatum controleren</div>
+        <div class="card-tijd">⏱ 5 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <a href="https://www.sslshopper.com/ssl-checker.html" target="_blank" style="color:#EE7203; font-weight:700;">sslshopper.com/ssl-checker.html</a></li>
+      <li><span class="stap-nr">2</span> Vul in: <span class="highlight">employwerkt.nl</span> → klik op Check</li>
+      <li><span class="stap-nr">3</span> Kijk bij "Valid until" — verloopt het binnen 30 dagen? Meld dit bij de hostingbeheerder</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> SSL-certificaten verlopen elk jaar. Als dat gebeurt zien bezoekers een rode waarschuwing en daalt de Google-ranking direct. 5 minuten checken voorkomt ellende.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4g">
+      <label for="check-4g">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- 4h -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">4h</div>
+      </div>
+      <div>
+        <div class="card-titel">Automatische backups instellen</div>
+        <div class="card-tijd">⏱ 20 minuten (eenmalig)</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Plugins</span> → <span class="highlight">Nieuwe plugin</span></li>
+      <li><span class="stap-nr">2</span> Zoek: <span class="highlight">UpdraftPlus</span> → installeer + activeer</li>
+      <li><span class="stap-nr">3</span> Ga naar <span class="highlight">Instellingen</span> → <span class="highlight">UpdraftPlus Backups</span></li>
+      <li><span class="stap-nr">4</span> Stel in: backup elke <span class="highlight">dag</span></li>
+      <li><span class="stap-nr">5</span> Koppel je <span class="highlight">Google Drive</span> of <span class="highlight">Dropbox</span> als opslagplek</li>
+      <li><span class="stap-nr">6</span> Klik op <span class="highlight">Nu een backup maken</span> om te testen</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom?</strong> Als de site gehackt wordt of een update iets kapotmaakt, kun je in een paar klikken terug naar gisteren. Zonder backup ben je alles kwijt.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-4h">
+      <label for="check-4h">Klaar!</label>
+    </div>
+  </div>
+
+  <!-- BLOK E -->
+  <div class="blok-titel">Blok E — Wettelijk verplicht (AVG)</div>
+
+  <div class="card" style="border-color:#fca5a5; background:#fff5f5;">
+    <p style="font-size:13px; color:#991b1b;">
+      <strong>Let op — dit is verplicht!</strong> Elke website in Nederland die een contactformulier of cookies gebruikt moet een privacyverklaring en cookiebeleid hebben. Employ heeft deze pagina's nog niet. Boetes voor ontbrekende AVG-documenten kunnen oplopen tot €20 miljoen.
+    </p>
+  </div>
+
+  <!-- 5a -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="nummer">5a</div>
+      </div>
+      <div>
+        <div class="card-titel">Privacyverklaring + cookiebanner aanmaken</div>
+        <div class="card-tijd">⏱ 20 minuten</div>
+      </div>
+    </div>
+    <ul class="stappen">
+      <li><span class="stap-nr">1</span> Ga naar <span class="highlight">Plugins</span> → <span class="highlight">Nieuwe plugin</span></li>
+      <li><span class="stap-nr">2</span> Zoek: <span class="highlight">Complianz</span> → installeer + activeer</li>
+      <li><span class="stap-nr">3</span> De plugin start automatisch een wizard — doorloop alle stappen (ca. 10 minuten)</li>
+      <li><span class="stap-nr">4</span> Vul in: bedrijfsnaam <span class="highlight">Employ Werkt</span>, adres <span class="highlight">Industrieweg 1, Hoogeveen</span>, e-mail <span class="highlight">info@employwerkt.nl</span></li>
+      <li><span class="stap-nr">5</span> Complianz maakt automatisch aan: <span class="highlight">/privacyverklaring/</span> en <span class="highlight">/cookiebeleid/</span></li>
+      <li><span class="stap-nr">6</span> De cookiebanner verschijnt automatisch op de site voor nieuwe bezoekers</li>
+      <li><span class="stap-nr">7</span> Voeg in de footer een link toe naar beide pagina's</li>
+    </ul>
+    <div class="tip">💡 <strong>Waarom Complianz?</strong> Het is de meest gebruikte AVG-plugin in Nederland, specifiek voor Nederlandse wetgeving. De gratis versie is voor de meeste sites meer dan genoeg. De teksten worden automatisch bijgehouden als de wet verandert.</div>
+    <div class="afvinken">
+      <input type="checkbox" id="check-5a">
+      <label for="check-5a">Klaar!</label>
+    </div>
+  </div>
+
+  <div style="background:white; border-radius:14px; padding:24px 26px; border:1.5px solid #ebebeb; text-align:center; margin-top:8px;">
+    <p style="font-size:14px; color:#555;">Kom je er niet uit of werkt iets niet? Geen paniek — geef het door en we lossen het samen op.</p>
+  </div>
+
+</div>
+
+<script>
+function kopieer(id, btn) {
+  const el = document.getElementById(id);
+  // Decode HTML entities voor kopiëren
+  const tmp = document.createElement('textarea');
+  tmp.innerHTML = el.textContent;
+  const tekst = tmp.value;
+  navigator.clipboard.writeText(tekst).then(() => {
+    btn.textContent = '✓ Gekopieerd!';
+    btn.classList.add('gekopieerd');
+    setTimeout(() => {
+      btn.textContent = 'Kopieer code';
+      btn.classList.remove('gekopieerd');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
