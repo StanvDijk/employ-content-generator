@@ -1471,12 +1471,20 @@ document.getElementById('photoGrid').addEventListener('click', async function(e)
 
   // Delete default photo
   if (target.dataset.action === 'delete-default') {
+    const path = target.dataset.photoPath;
+    if (fbOffline) {
+      hiddenDefaults.push(path);
+      renderPhotoGrid();
+      return;
+    }
     try {
-      const path = target.dataset.photoPath;
       await fbAddDoc(fbCollection(fbDb, 'hidden-defaults'), { path, hiddenAt: Date.now() });
       hiddenDefaults.push(path);
       renderPhotoGrid();
-    } catch(err) { alert('Fout: ' + err.message); }
+    } catch(err) {
+      hiddenDefaults.push(path);
+      renderPhotoGrid();
+    }
     return;
   }
 
